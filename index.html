@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Maria Ali, data analyst in Fiji: Power BI dashboards, regression modelling and web tools.">
+<title>Maria Ali Portfolio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Schibsted+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky profile rail on the left (name, photo, contact) + project gallery on the right; each card opens a full-screen project sheet routed by #hash */
+/* Single dark look by design: deep ocean navy with blurred teal/indigo glows; panels are frosted glass */
+:root{
+  --bg:#060E18; --surface:rgba(18,32,48,.58); --solid:#0F1C2B; --ink:#EAF1F6; --ink-2:#B4C2CE; --ink-3:#8494A3; --line:rgba(160,200,225,.14);
+  --navy:#0B2340; --navy-ink:#F2F6FA; --teal:#45CAD6; --teal-2:#2A8F9B; --teal-soft:rgba(69,202,214,.14); --row:rgba(255,255,255,.04);
+  --glow:rgba(69,202,214,.16); --bar1:#8FB3DD;
+  --font-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --font-body:"Schibsted Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+/* blurred ambient background */
+.ambient{position:fixed;inset:0;z-index:-1;overflow:hidden;background:radial-gradient(140% 100% at 50% 0%,#0B1B2E 0%,#060E18 60%)}
+.ambient i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55}
+.ambient i:nth-child(1){width:46vw;height:46vw;left:-10vw;top:-12vw;background:#0E6B78}
+.ambient i:nth-child(2){width:40vw;height:40vw;right:-8vw;top:18vh;background:#22306E;opacity:.6}
+.ambient i:nth-child(3){width:36vw;height:36vw;left:30vw;bottom:-14vw;background:#0A4F63;opacity:.5}
+.ambient::after{content:"";position:absolute;inset:0;background:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(#000,transparent 85%)}
+@media (prefers-reduced-motion:no-preference){.ambient i{animation:drift 28s ease-in-out infinite alternate}.ambient i:nth-child(2){animation-duration:34s}.ambient i:nth-child(3){animation-duration:40s}}
+@keyframes drift{to{transform:translate(4vw,3vh) scale(1.08)}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0}
+img{max-width:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.6}
+body.locked{overflow:hidden}
+a{color:var(--teal)}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;letter-spacing:-.015em}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ============ shell ============ */
+.shell{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:330px minmax(0,1fr);gap:56px;
+  padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+@media (max-width:960px){.shell{grid-template-columns:minmax(0,1fr);gap:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
+
+/* ============ profile rail ============ */
+.rail{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;padding-block:40px 32px;display:grid;gap:22px}
+@media (max-width:960px){.rail{position:static;padding-block:28px 8px}}
+.who{display:flex;gap:16px;align-items:center}
+.avatar{width:84px;height:84px;border-radius:50%;flex:none;position:relative;display:grid;place-items:center;overflow:hidden;
+  background:conic-gradient(from 210deg,var(--teal),var(--navy) 55%,var(--teal));}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar span{font-family:var(--font-display);font-weight:800;font-size:30px;color:var(--navy-ink)}
+.avatar::after{content:"";position:absolute;inset:3px;border-radius:50%;border:2px solid #060E18;pointer-events:none}
+.name{font-family:var(--font-display);font-weight:800;font-size:34px;line-height:1;letter-spacing:-.02em}
+.title{font-size:15px;color:var(--ink-2);margin-top:6px}
+.status{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink);background:var(--teal-soft);padding:6px 12px;border-radius:999px;width:fit-content}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px var(--glow)}
+.intro{color:var(--ink-2);margin:0;font-size:15.5px}
+.kv{display:grid;gap:8px;font-size:14px;margin:0}
+.kv div{display:grid;grid-template-columns:86px 1fr;gap:10px}
+.kv dt{color:var(--ink-3);font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding-top:2px}
+.kv dd{margin:0}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.btn{all:unset;backdrop-filter:blur(10px);cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:9px 14px;border-radius:8px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none}
+.btn.primary{background:var(--teal);color:#04262B;border-color:var(--teal)}
+.btn:hover{border-color:var(--teal)}
+nav.jump{display:flex;gap:18px;font-size:14px;border-top:1px solid var(--line);padding-top:16px}
+nav.jump a{color:var(--ink-2);text-decoration:none}
+nav.jump a:hover{color:var(--teal)}
+@media (max-width:960px){nav.jump{display:none}}
+
+/* ============ main ============ */
+main{padding-block:40px 80px;display:grid;gap:72px;min-width:0}
+@media (max-width:960px){main{padding-block:24px 64px;gap:56px}}
+.hero h1{font-size:clamp(34px,4.6vw,56px);font-weight:700;line-height:1.04;max-width:16ch}
+.hero h1 em{font-style:normal;color:var(--teal)}
+.hero p{color:var(--ink-2);max-width:56ch;margin:16px 0 0;font-size:17px}
+.sechead{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:20px}
+.sechead h2{font-size:26px;font-weight:700}
+
+/* ============ project cards ============ */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+@media (max-width:720px){.grid{grid-template-columns:minmax(0,1fr)}}
+.card{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-rows:auto 1fr;background:var(--surface);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);
+  border-radius:16px;overflow:hidden;position:relative;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s,border-color .35s}
+.card:hover,.card:focus-visible{transform:translateY(-6px);border-color:var(--teal);box-shadow:0 30px 60px -30px rgba(0,0,0,.8),0 0 0 6px var(--glow),0 0 60px -10px var(--glow)}
+.card.wide{grid-column:1/-1;grid-template-columns:1.25fr 1fr;grid-template-rows:auto}
+@media (max-width:720px){.card.wide{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr}}
+.thumb{position:relative;background:linear-gradient(160deg,#0D2846,#081A2E);aspect-ratio:16/10;overflow:hidden;max-width:100%}
+.card.wide .thumb{aspect-ratio:auto;min-height:280px}
+.thumb svg{position:absolute;inset:0;width:100%;height:100%}
+.thumb::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 100% 0%,rgba(92,196,207,.25),transparent 60%);pointer-events:none}
+.body{padding:20px 22px 22px;display:grid;gap:10px;align-content:start}
+.body .eyebrow{display:flex;justify-content:space-between;gap:8px}
+.body h3{font-size:22px;font-weight:700;line-height:1.15}
+.body p{margin:0;color:var(--ink-2);font-size:15px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-family:var(--font-mono);font-size:11.5px;padding:3px 8px;border-radius:4px;background:var(--teal-soft);color:var(--ink)}
+.cta{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--teal);margin-top:4px}
+.cta b{display:inline-block;transition:transform .3s}
+.card:hover .cta b,.card:focus-visible .cta b{transform:translateX(6px)}
+.badge{position:absolute;top:14px;left:14px;z-index:2;font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);padding:4px 9px;border-radius:999px;backdrop-filter:blur(6px)}
+.badge.live{background:var(--teal);border-color:var(--teal);color:#04262B}
+
+/* thumbnail motion */
+.g-bar{transform-box:fill-box;transform-origin:bottom;transform:scaleY(.55);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.card:hover .g-bar,.card:focus-visible .g-bar{transform:scaleY(1)}
+.g-line{stroke-dasharray:900;stroke-dashoffset:900;transition:stroke-dashoffset 1.2s ease}
+.g-line.base{stroke-dashoffset:380}
+.card:hover .g-line,.card:focus-visible .g-line{stroke-dashoffset:0}
+.g-stamp{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(1.6) rotate(-12deg);transition:opacity .35s,transform .45s cubic-bezier(.2,1.4,.4,1)}
+.card:hover .g-stamp,.card:focus-visible .g-stamp{opacity:1;transform:scale(1) rotate(-12deg)}
+.g-tick{opacity:.25;transition:opacity .3s}
+.card:hover .g-tick,.card:focus-visible .g-tick{opacity:1}
+.card:hover .g-tick:nth-of-type(2){transition-delay:.1s}.card:hover .g-tick:nth-of-type(3){transition-delay:.2s}.card:hover .g-tick:nth-of-type(4){transition-delay:.3s}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.g-bar{transform:none}.g-line{stroke-dashoffset:0}.g-stamp{opacity:1;transform:rotate(-12deg)}.g-tick{opacity:1}}
+
+/* ============ about ============ */
+.about{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:820px){.about{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;padding:20px}
+.panel h3{font-size:17px;margin-bottom:10px}
+.panel ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:15px;display:grid;gap:4px}
+.timeline{display:grid;gap:14px}
+.timeline div{display:grid;gap:2px}
+.timeline b{font-weight:600}
+.timeline span{font-size:14px;color:var(--ink-3)}
+footer{border-top:1px solid var(--line);padding-top:24px;color:var(--ink-3);font-size:14px}
+
+/* ============ project sheet ============ */
+.sheet{position:fixed;inset:0;z-index:50;background:rgba(6,14,24,.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);overflow-y:auto;overscroll-behavior:contain;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-reduced-motion:no-preference){.sheet:not([hidden]){animation:rise .45s cubic-bezier(.2,.8,.2,1)}}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.sheet-bar{position:sticky;top:0;z-index:2;background:rgba(6,14,24,.7);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.sheet-bar .in{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:12px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sheet-bar .who-mini{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700}
+.sheet-bar .who-mini .avatar{width:34px;height:34px}
+.sheet-bar .who-mini .avatar span{font-size:13px}
+.sheet-bar .who-mini .avatar::after{inset:2px;border-width:1.5px}
+.sheet-bar .nav{display:flex;gap:8px}
+.sheet-in{max-width:1180px;margin:0 auto;padding-block:40px 80px;display:grid;gap:32px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.p-head{display:grid;gap:12px;max-width:780px}
+.p-head h2{font-size:clamp(32px,4.4vw,52px);font-weight:700;line-height:1.05}
+.p-head .meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--ink-3)}
+.p-head p{margin:0;font-size:18px;color:var(--ink-2)}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.three h3{font-size:16px;margin-bottom:6px}
+.three p{margin:0;color:var(--ink-2);font-size:15px}
+@media (max-width:760px){.three{grid-template-columns:minmax(0,1fr)}}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stat{background:var(--solid);padding:18px}
+.stat .v{font-family:var(--font-mono);font-size:26px;font-weight:500}
+.stat .k{font-size:13.5px;color:var(--ink-2);line-height:1.4}
+@media (max-width:760px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;counter-reset:s}
+.flow .panel{position:relative;padding-top:44px}
+.flow .panel::before{counter-increment:s;content:"Step " counter(s);position:absolute;top:16px;left:20px;font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+@media (max-width:760px){.flow{grid-template-columns:minmax(0,1fr)}}
+.pending{border:1.5px dashed var(--line);border-radius:12px;padding:18px;color:var(--ink-3);font-size:14.5px}
+
+/* ============ dashboard rebuild ============ */
+.canvas{background:var(--solid);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:14px;box-shadow:0 20px 50px -34px rgba(11,35,64,.6)}
+.note{font-size:13px;color:var(--ink-3)}
+.dash-top{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,.8fr) minmax(0,1fr);gap:12px}
+.dash-title{background:#13355E;color:var(--navy-ink);border-radius:8px;padding:14px 18px;display:flex;align-items:center;font-family:var(--font-display);font-weight:800;font-size:clamp(18px,2.2vw,24px);line-height:1.15}
+.kpi,.ctrl{background:var(--row);border-radius:8px;padding:12px 14px;display:grid;align-content:start;gap:4px}
+.kpi .k,.ctrl label{font-size:13px;color:var(--teal);font-weight:600}
+.kpi .v{font-family:var(--font-mono);font-size:32px;line-height:1.1}
+select{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--solid);color:var(--ink);width:100%}
+.dash-mid{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:12px}
+.tablebox{overflow:auto;max-height:410px;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
+thead th{position:sticky;top:0;background:#13355E;color:var(--navy-ink);text-align:left;font-weight:600;padding:8px 10px;white-space:nowrap}
+tbody td{padding:6px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+tbody tr:nth-child(even) td{background:var(--row)}
+td.num{text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.slicers{display:grid;gap:12px;align-content:start}
+.sl-h{background:var(--teal);color:#04262B;border-radius:6px;padding:7px 10px;font-weight:600;font-size:14px;text-align:center}
+.sl-list{display:grid;gap:4px;margin-top:6px}
+.sl-item{all:unset;cursor:pointer;display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;background:var(--row);border-left:4px solid var(--teal);padding:6px 10px;border-radius:0 6px 6px 0;font-size:14px}
+.sl-item .c{font-family:var(--font-mono);color:var(--teal);font-size:15px}
+.sl-item[aria-pressed="true"]{background:var(--teal-soft);outline:1.5px solid var(--teal)}
+.sl-item.dim{opacity:.55}
+.charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.chart{border:1px solid var(--line);border-radius:8px;padding:12px;position:relative;min-width:0}
+.chart h3{font-size:15px;font-weight:600;font-family:var(--font-body);margin-bottom:4px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .bar{cursor:pointer}
+.chart .bar.off{opacity:.3}
+.tip{position:absolute;pointer-events:none;background:#EAF1F6;color:#060E18;font-size:12.5px;padding:6px 8px;border-radius:4px;white-space:nowrap;transform:translate(-50%,-110%)}
+.reset{all:unset;cursor:pointer;font-size:13px;color:var(--teal);font-weight:600}
+.dash-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center}
+@media (max-width:900px){.dash-top{grid-template-columns:1fr 1fr}.dash-title{grid-column:1/-1}.dash-mid{grid-template-columns:minmax(0,1fr)}.slicers{grid-template-columns:1fr 1fr}}
+@media (max-width:620px){.charts{grid-template-columns:minmax(0,1fr)}.slicers{grid-template-columns:minmax(0,1fr)}}
+
+/* SC356 charts */
+.seg{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:10px;background:var(--surface);width:fit-content;flex-wrap:wrap}
+.segb{all:unset;cursor:pointer;padding:7px 14px;border-radius:7px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.segb[aria-pressed="true"]{background:var(--teal);color:#04262B}
+.vis2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.vis2{grid-template-columns:minmax(0,1fr)}}
+.viz{margin:0;background:var(--solid);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:8px;min-width:0}
+.viz figcaption{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.viz figcaption b{font-weight:600}
+.viz figcaption span{font-size:13px;color:var(--ink-3);font-family:var(--font-mono)}
+.plot{position:relative}
+.plot svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:18px;height:0;border-top:2px solid var(--teal)}
+.sw.dash{border-top:2px dashed var(--ink-2)}
+.sw.band{height:10px;border:0;background:rgba(143,179,221,.28);border-radius:2px}
+.xh{position:absolute;pointer-events:none;background:#EAF1F6;color:#060E18;font-size:12.5px;padding:6px 8px;border-radius:4px;white-space:nowrap;font-family:var(--font-mono)}
+.score{background:var(--surface);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:12px}
+.score h3{font-size:17px}
+.tbl{overflow-x:auto}
+.score table{min-width:520px}
+.score thead th{background:transparent;color:var(--ink-3);font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;position:static;border-bottom:1px solid var(--line)}
+.score tbody td{background:transparent!important}
+.pf{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:2px 8px;border-radius:999px}
+.pf::before{font-weight:700}
+.pf.ok{background:rgba(74,201,134,.14);color:#7FE0AA}.pf.ok::before{content:"✓"}
+.pf.no{background:rgba(240,110,110,.14);color:#F4A3A3}.pf.no::before{content:"✕"}
+/* timesheet shots */
+.shots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.shot{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid}
+.shot.big{grid-column:1/-1}
+.shot img{display:block;width:100%;height:auto;background:#F7F2EE}
+.shot figcaption{padding:10px 14px;font-size:14px;color:var(--ink-2)}
+@media (max-width:700px){.shots{grid-template-columns:minmax(0,1fr)}}
+/* ===== timesheet demo (uses the real app's brown palette, fixed light look inside its window) ===== */
+.ts-app{--tb:#5E3A21;--tb2:#7C4E2C;--tcream:#F7F1EC;--tline:#E2CDBD;--tink:#2A211B;--tink2:#6B5A4E;--tok:#2F7D4F;--tbad:#A3322A;
+  background:#fff;color:var(--tink);border-radius:14px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 60px -30px rgba(0,0,0,.8);font-family:Arial,Helvetica,sans-serif;color-scheme:light}
+.ts-chrome{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#ECE6E1;border-bottom:1px solid #D9CFC7;flex-wrap:wrap}
+.ts-chrome .dots{display:flex;gap:6px}.ts-chrome .dots i{width:11px;height:11px;border-radius:50%;background:#CDBFB4}
+.ts-url{flex:1;min-width:0;background:#fff;border-radius:6px;padding:4px 10px;font-size:12.5px;color:#5c514a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ts-tag{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--tb)}
+.ts-steps{list-style:none;margin:0;padding:10px 14px;display:flex;gap:6px;flex-wrap:wrap;background:var(--tcream);border-bottom:1px solid var(--tline);counter-reset:t}
+.ts-steps li{counter-increment:t;font-size:12.5px;color:var(--tink2);padding:4px 10px;border-radius:999px;border:1px solid var(--tline);background:#fff}
+.ts-steps li::before{content:counter(t) ". "}
+.ts-steps li.on{background:var(--tb);color:#fff;border-color:var(--tb)}
+.ts-steps li.done{color:var(--tok);border-color:#BFDCC9}
+.ts-stage{position:relative;padding:20px;background:var(--tcream);min-height:420px}
+.ts-view{display:grid;gap:12px}
+.ts-login{background:#fff;max-width:400px;margin:28px auto;border-radius:10px;padding:28px;display:grid;gap:6px;box-shadow:0 10px 30px rgba(94,58,33,.12)}
+.ts-co{margin:0;text-align:center;color:var(--tb);font-size:22px;font-family:Arial,Helvetica,sans-serif;letter-spacing:0}
+.ts-sub{margin:0 0 10px;text-align:center;font-weight:700}
+.ts-app label{font-weight:700;font-size:14px}
+.ts-app input,.ts-app select,.ts-app textarea{font:inherit;font-size:14px;color:var(--tink);background:#fff;border:1px solid var(--tline);border-radius:5px;padding:8px 10px;width:100%;min-width:0}
+.ts-app input:focus-visible,.ts-app select:focus-visible,.ts-app textarea:focus-visible,.ts-btn:focus-visible{outline:2px solid var(--tb2);outline-offset:1px}
+.ts-btn{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;background:var(--tb2);color:#fff;font-size:14px;padding:10px 18px;border-radius:6px}
+.ts-btn:hover{background:var(--tb)}
+.ts-btn.ghost{background:#fff;color:var(--tb);border:1px solid var(--tb2)}
+.ts-btn.ghost:hover{background:#FBF5F0}
+.ts-login .ts-btn{margin-top:16px}
+.ts-hint{font-size:13px;color:var(--tink2);margin:0;text-align:center}
+.ts-err{margin:0;color:var(--tbad);font-size:13.5px;font-weight:700}
+.ts-head{background:var(--tb);color:#fff;border-radius:8px;padding:14px 18px;text-align:center;display:grid;gap:2px}
+.ts-head h4{margin:0;font-family:Arial,Helvetica,sans-serif;font-size:22px;letter-spacing:0}
+.ts-head span{font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+.ts-meta{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);gap:12px;background:#fff;border-left:4px solid var(--tb);border-radius:6px;padding:12px 14px;align-items:end}
+.ts-meta>div{display:grid;gap:4px;min-width:0}
+.ts-k{font-size:12px;font-weight:700;color:var(--tink2);text-transform:uppercase;letter-spacing:.06em}
+.ts-status{font-weight:700;width:fit-content;padding:2px 10px;border-radius:999px;background:#EFE4DA;color:var(--tb)}
+.ts-status.sub{background:#FFF1D6;color:#8A5A00}.ts-status.ok{background:#DDF0E3;color:var(--tok)}.ts-status.ret{background:#F8DEDB;color:var(--tbad)}
+.ts-h{margin:8px 0 0;color:var(--tb);font-size:17px;border-bottom:2px solid var(--tb2);padding-bottom:4px;font-family:Arial,Helvetica,sans-serif}
+.ts-scroll{overflow-x:auto;border:1px solid var(--tline);border-radius:6px;background:#fff}
+.ts-table{border-collapse:collapse;width:100%;min-width:820px;font-size:13.5px}
+.ts-table thead th{background:var(--tb);color:#fff;padding:9px 8px;font-weight:700;text-align:center;position:static}
+.ts-table td{padding:6px 8px;border-bottom:1px solid var(--tline);text-align:center;vertical-align:middle;background:#fff}
+.ts-table tr:nth-child(even) td{background:#FBF7F3}
+.ts-table td:first-child{font-weight:700}
+.ts-table td.h{font-family:var(--font-mono);font-variant-numeric:tabular-nums;width:64px}
+.ts-table textarea{min-height:44px;resize:vertical}
+.ts-table tr.off td{color:#9b8c81}
+.ts-table tr.bad td{background:#FCEDEB!important}
+.ts-sum{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border-radius:6px;padding:10px 14px}
+.ts-sum>div{display:flex;gap:10px;align-items:baseline}
+.ts-sum b{font-size:22px;color:var(--tb)}
+.ts-ta{resize:vertical}
+.ts-sigrow{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+.ts-sig{background:#fff;border:2px solid var(--tb);border-radius:6px;width:100%;max-width:420px;height:auto;aspect-ratio:420/120;touch-action:none;cursor:crosshair}
+.ts-sigside{display:grid;gap:8px}
+.ts-actions{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.ts-mail{background:#fff;border-radius:10px;max-width:620px;margin:10px auto;overflow:hidden;box-shadow:0 10px 30px rgba(94,58,33,.12)}
+.ts-mail-h{padding:14px 18px;border-bottom:1px solid var(--tline);display:grid;gap:4px;font-size:14px}
+.ts-mail-b{padding:18px;display:grid;gap:4px;font-size:15px}
+.ts-mail-b p{margin:0 0 8px}
+.ts-mail-b .ts-btn{width:fit-content;margin-top:6px}
+.ts-review{background:#fff;border-radius:6px;overflow-x:auto}
+.ts-review table{border-collapse:collapse;width:100%;min-width:560px;font-size:13.5px}
+.ts-review th{background:#EFE4DA;color:var(--tb);text-align:left;padding:8px 10px;position:static}
+.ts-review td{padding:7px 10px;border-bottom:1px solid var(--tline);background:#fff}
+.ts-pdfwrap{display:grid;place-items:center;padding:6px}
+.ts-pdf{background:#fff;width:100%;max-width:720px;padding:30px 34px;box-shadow:0 14px 34px rgba(0,0,0,.18);position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;font-size:13px}
+.ts-pdfwrap{grid-template-columns:minmax(0,1fr);justify-items:center}
+.ts-pdf h4{margin:0;text-align:center;color:var(--tb);font-family:Arial,Helvetica,sans-serif;font-size:19px;letter-spacing:0}
+.ts-pdf .sub{text-align:center;font-weight:700;letter-spacing:.12em;font-size:11px;text-transform:uppercase;margin-top:-8px}
+.ts-pdf table{border-collapse:collapse;width:100%;table-layout:fixed}
+.ts-pdf td{overflow-wrap:anywhere}
+.ts-pdf th:nth-child(1),.ts-pdf th:nth-child(2){width:15%}.ts-pdf th:nth-child(3){width:11%}.ts-pdf th:nth-child(4),.ts-pdf th:nth-child(5),.ts-pdf th:nth-child(6){width:8%}
+.ts-pdf th,.ts-pdf td{border:1px solid var(--tline);padding:5px 6px;text-align:left;background:#fff;color:var(--tink);position:static;font-size:12px}
+.ts-pdf th{background:#EFE4DA;color:var(--tb)}
+.ts-pdf .sigs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ts-pdf .sigs img{display:block;width:100%;border-bottom:1px solid var(--tink);background:#fff}
+.ts-pdf .stamp{position:absolute;top:64px;right:28px;border:3px solid var(--tok);color:var(--tok);font-weight:800;padding:4px 10px;transform:rotate(-10deg);border-radius:4px;letter-spacing:.08em}
+.ts-toast{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:var(--tink);color:#fff;padding:8px 14px;border-radius:6px;font-size:14px}
+@media (max-width:700px){.ts-meta{grid-template-columns:minmax(0,1fr)}.ts-stage{padding:12px}.ts-pdf{padding:20px}.ts-pdf .sigs{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:no-preference){.ts-view:not([hidden]){animation:tsin .3s ease}}
+@keyframes tsin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+</style>
+</head>
+<body>
+
+
+<div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="shell">
+  <!-- ============ PROFILE RAIL ============ -->
+  <aside class="rail" aria-label="About Maria">
+    <div class="who">
+      <div class="avatar" aria-hidden="true"><span>MA</span></div>
+      <div><div class="name">Maria Ali</div><div class="title">Data Analyst · Official Statistics &amp; Mathematics</div></div>
+    </div>
+    <div class="status"><i></i>Open to data analyst &amp; economist roles</div>
+    <p class="intro">I build dashboards, models and reports that turn financial and official data into decisions, for managers, boards and regulators in Fiji.</p>
+    <dl class="kv">
+      <div><dt>Now</dt><dd>Training Officer, Merchant Finance</dd></div>
+      <div><dt>Before</dt><dd>Data Analyst Attaché, Merchant Finance</dd></div>
+      <div><dt>Study</dt><dd>B.Com, Official Statistics &amp; Mathematics, USP</dd></div>
+      <div><dt>Based</dt><dd>Nasinu, Fiji</dd></div>
+    </dl>
+    <div class="links">
+      <button class="btn primary" type="button" data-copy="zalimarii0410@gmail.com"><span>zalimarii0410@gmail.com</span></button>
+      <a class="btn" href="https://linkedin.com/in/maria-ali080726">LinkedIn ↗</a>
+    </div>
+    <nav class="jump"><a href="#work-list">Work</a><a href="#about-list">About</a><a href="#contact">Contact</a></nav>
+  </aside>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">Portfolio · 2026</div>
+      <h1>Data that sales managers, boards and <em>regulators</em> can act on.</h1>
+      <p>Ten months on a finance company's data team: Power BI reporting, Board ALCO packs and Reserve Bank of Fiji returns, plus a statistics degree that taught me to question every trend line.</p>
+    </section>
+
+    <section id="work-list">
+      <div class="sechead"><h2>Selected work</h2><span class="eyebrow">4 projects</span></div>
+      <div class="grid">
+
+        <button class="card wide" type="button" data-open="credit-dashboard" aria-label="Open project: Deals Under Credit and Preliminary Assessment">
+          <div class="thumb">
+            <span class="badge live">Interactive</span>
+            <svg viewBox="0 0 560 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect x="30" y="54" width="230" height="40" rx="5" fill="#10335A"/>
+              <rect x="44" y="68" width="150" height="12" rx="3" fill="#E9F1F8"/>
+              <rect x="272" y="54" width="110" height="40" rx="5" fill="#16406C"/>
+              <rect x="284" y="64" width="50" height="6" rx="3" fill="#5CC4CF"/><rect x="284" y="76" width="30" height="10" rx="2" fill="#E9F1F8"/>
+              <rect x="394" y="54" width="136" height="40" rx="5" fill="#16406C"/><rect x="406" y="70" width="100" height="10" rx="3" fill="#2E5B88"/>
+              <g fill="#1B4A7A">
+                <rect x="30" y="104" width="352" height="9" rx="2"/><rect x="30" y="118" width="352" height="9" rx="2" opacity=".6"/><rect x="30" y="132" width="352" height="9" rx="2"/><rect x="30" y="146" width="352" height="9" rx="2" opacity=".6"/>
+              </g>
+              <g fill="#5CC4CF"><rect x="394" y="104" width="136" height="12" rx="3"/></g>
+              <g fill="#1B4A7A"><rect x="394" y="120" width="136" height="14" rx="2"/><rect x="394" y="138" width="136" height="14" rx="2"/></g>
+              <g>
+                <rect class="g-bar" x="40" y="186" width="20" height="90" rx="3" fill="#E9F1F8"/><rect class="g-bar" x="66" y="210" width="20" height="66" rx="3" fill="#E9F1F8"/>
+                <rect class="g-bar" x="92" y="222" width="20" height="54" rx="3" fill="#E9F1F8"/><rect class="g-bar" x="118" y="234" width="20" height="42" rx="3" fill="#E9F1F8"/>
+                <rect class="g-bar" x="144" y="244" width="20" height="32" rx="3" fill="#E9F1F8"/><rect class="g-bar" x="170" y="252" width="20" height="24" rx="3" fill="#E9F1F8"/>
+                <rect class="g-bar" x="196" y="258" width="20" height="18" rx="3" fill="#E9F1F8"/><rect class="g-bar" x="222" y="264" width="20" height="12" rx="3" fill="#E9F1F8"/>
+              </g>
+              <g>
+                <rect class="g-bar" x="300" y="190" width="20" height="86" rx="3" fill="#5CC4CF"/><rect class="g-bar" x="326" y="214" width="20" height="62" rx="3" fill="#5CC4CF"/>
+                <rect class="g-bar" x="352" y="214" width="20" height="62" rx="3" fill="#5CC4CF"/><rect class="g-bar" x="378" y="228" width="20" height="48" rx="3" fill="#5CC4CF"/>
+                <rect class="g-bar" x="404" y="240" width="20" height="36" rx="3" fill="#5CC4CF"/><rect class="g-bar" x="430" y="240" width="20" height="36" rx="3" fill="#5CC4CF"/>
+                <rect class="g-bar" x="456" y="250" width="20" height="26" rx="3" fill="#5CC4CF"/><rect class="g-bar" x="482" y="258" width="20" height="18" rx="3" fill="#5CC4CF"/>
+              </g>
+            </svg>
+          </div>
+          <div class="body">
+            <div class="eyebrow"><span>01 · Power BI</span><span>2026</span></div>
+            <h3>Deals Under Credit &amp; Preliminary Assessment</h3>
+            <p>A live report that replaced a manual Excel count, so sales GMs can see which deals are stuck, where, and for how long. Rebuilt here with fictional data so you can click through it.</p>
+            <div class="tags"><span class="tag">Power BI</span><span class="tag">SQL</span><span class="tag">Excel</span></div>
+            <span class="cta">Try the dashboard <b>→</b></span>
+          </div>
+        </button>
+
+        <button class="card" type="button" data-open="stock-trend" aria-label="Open project: Can a trend line predict share prices?">
+          <div class="thumb">
+            <span class="badge">Capstone</span>
+            <svg viewBox="0 0 560 350" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <g stroke="#1B4A7A" stroke-width="1"><line x1="40" x2="520" y1="90" y2="90"/><line x1="40" x2="520" y1="160" y2="160"/><line x1="40" x2="520" y1="230" y2="230"/><line x1="40" x2="520" y1="300" y2="300"/></g>
+              <path class="g-line base" d="M40,262 L70,250 L95,268 L120,240 L150,252 L175,226 L200,236 L230,206 L255,214 L280,188 L305,196 L330,170 L360,160 L385,176 L410,140 L440,128 L465,138 L490,108 L520,96" fill="none" stroke="#5CC4CF" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+              <path class="g-line" d="M40,272 L520,110" fill="none" stroke="#E9F1F8" stroke-width="2" stroke-dasharray="8 7"/>
+              <path class="g-line base" d="M40,240 L80,236 L120,244 L160,232 L200,240 L240,230 L280,238 L320,228 L360,236 L400,226 L440,232 L480,224 L520,230" fill="none" stroke="#8BA9C9" stroke-width="2.5" stroke-linejoin="round"/>
+              <text x="40" y="70" fill="#E9F1F8" font-family="JetBrains Mono, monospace" font-size="16">R² 0.91 · DW ≈ 0</text>
+            </svg>
+          </div>
+          <div class="body">
+            <div class="eyebrow"><span>02 · Python · Power BI</span><span>2026</span></div>
+            <h3>Can a trend line predict share prices?</h3>
+            <p>Regression on US and NZ markets, 2022–2026, with lessons for Fiji's small stock exchange.</p>
+            <div class="tags"><span class="tag">Python</span><span class="tag">OLS</span><span class="tag">Durbin-Watson</span></div>
+            <span class="cta">Read the case study <b>→</b></span>
+          </div>
+        </button>
+
+        <button class="card" type="button" data-open="timesheet" aria-label="Open project: Digital timesheet and approval system">
+          <div class="thumb">
+            <span class="badge">Web app</span>
+            <svg viewBox="0 0 560 350" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect x="150" y="50" width="260" height="260" rx="12" fill="#F2F6FA"/>
+              <rect x="174" y="76" width="120" height="12" rx="3" fill="#0B2340"/>
+              <g fill="#D3DEE8"><rect x="174" y="108" width="212" height="22" rx="4"/><rect x="174" y="138" width="212" height="22" rx="4"/><rect x="174" y="168" width="212" height="22" rx="4"/><rect x="174" y="198" width="212" height="22" rx="4"/></g>
+              <g fill="#0A8F9E"><rect x="350" y="114" width="28" height="10" rx="2"/><rect x="350" y="144" width="28" height="10" rx="2"/><rect x="350" y="174" width="28" height="10" rx="2"/><rect x="350" y="204" width="28" height="10" rx="2"/></g>
+              <rect x="174" y="250" width="100" height="32" rx="6" fill="#0B2340"/>
+              <g class="g-stamp"><rect x="290" y="236" width="130" height="46" rx="6" fill="none" stroke="#0A8F9E" stroke-width="4"/><text x="355" y="267" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="20" fill="#0A8F9E">APPROVED</text></g>
+            </svg>
+          </div>
+          <div class="body">
+            <div class="eyebrow"><span>03 · Firebase · JavaScript</span><span>2026</span></div>
+            <h3>Digital timesheet &amp; approval system</h3>
+            <p>Built so a supervisor in Samoa could approve interns' timesheets in Fiji, with no paper.</p>
+            <div class="tags"><span class="tag">Firebase</span><span class="tag">JavaScript</span><span class="tag">HTML/CSS</span></div>
+            <span class="cta">See how it works <b>→</b></span>
+          </div>
+        </button>
+
+        <button class="card" type="button" data-open="reconciliation" aria-label="Open project: Payment reconciliation tool testing">
+          <div class="thumb">
+            <span class="badge">Testing</span>
+            <svg viewBox="0 0 560 350" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <text x="70" y="70" fill="#8BA9C9" font-family="JetBrains Mono, monospace" font-size="14">BANK STATEMENT</text>
+              <text x="330" y="70" fill="#8BA9C9" font-family="JetBrains Mono, monospace" font-size="14">PAYMENTS</text>
+              <g fill="#16406C"><rect x="70" y="90" width="170" height="38" rx="6"/><rect x="70" y="142" width="170" height="38" rx="6"/><rect x="70" y="194" width="170" height="38" rx="6"/><rect x="70" y="246" width="170" height="38" rx="6"/>
+                <rect x="330" y="90" width="170" height="38" rx="6"/><rect x="330" y="142" width="170" height="38" rx="6"/><rect x="330" y="194" width="170" height="38" rx="6"/><rect x="330" y="246" width="170" height="38" rx="6"/></g>
+              <g fill="#E9F1F8" font-family="JetBrains Mono, monospace" font-size="13"><text x="86" y="114">$1,240.00</text><text x="86" y="166">$385.50</text><text x="86" y="218">$2,010.75</text><text x="86" y="270">$96.00</text>
+                <text x="346" y="114">$1,240.00</text><text x="346" y="166">$2,010.75</text><text x="346" y="218">$385.50</text><text x="346" y="270">$96.00</text></g>
+              <g stroke="#5CC4CF" stroke-width="2.5" fill="none">
+                <path class="g-tick" d="M240,109 L330,109"/><path class="g-tick" d="M240,161 C285,161 285,213 330,213"/><path class="g-tick" d="M240,213 C285,213 285,161 330,161"/><path class="g-tick" d="M240,265 L330,265"/>
+              </g>
+            </svg>
+          </div>
+          <div class="body">
+            <div class="eyebrow"><span>04 · Python</span><span>2026</span></div>
+            <h3>Payment reconciliation testing</h3>
+            <p>Tested a new reconciliation tool on real bank statements before go-live, checking every match by hand.</p>
+            <div class="tags"><span class="tag">Python</span><span class="tag">venv</span><span class="tag">QA</span></div>
+            <span class="cta">View details <b>→</b></span>
+          </div>
+        </button>
+
+      </div>
+    </section>
+
+    <section id="about-list">
+      <div class="sechead"><h2>About</h2><span class="eyebrow">Skills · Experience</span></div>
+      <div class="about">
+        <div class="panel"><h3>Experience</h3><div class="timeline">
+          <div><b>Training Officer</b><span>Merchant Finance · Oct 2026 – now</span></div>
+          <div><b>Data Analyst Attaché</b><span>Merchant Finance · Dec 2025 – Dec 2026</span></div>
+          <div><b>Radio Personality</b><span>Communications Fiji · Oct 2025 – Feb 2026</span></div>
+        </div></div>
+        <div class="panel"><h3>What I do</h3><ul>
+          <li>Board ALCO data packs</li><li>Reserve Bank of Fiji regulatory returns</li><li>Data requests to stakeholders</li><li>Weekly GA4 &amp; Meta Business reports</li><li>Power BI dashboards</li><li>Regression &amp; trend analysis</li><li>Data cleaning &amp; validation</li></ul></div>
+        <div class="panel"><h3>Tools &amp; study</h3><ul>
+          <li>Power BI, Excel, SQL</li><li>Python (pandas, numpy), R</li><li>HTML, CSS, JavaScript, Firebase</li><li>B.Com, USP · GPA 3.12 / 4.5</li><li>Top Year 13 Maths score (95/100)</li></ul></div>
+      </div>
+    </section>
+
+    <footer id="contact">Maria Ali · Nasinu, Fiji · <span class="mono">zalimarii0410@gmail.com</span><br>Dashboard data on this site is fictional and does not represent any real customer or company.</footer>
+  </main>
+</div>
+
+<!-- ============ PROJECT SHEET ============ -->
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="sheet-bar"><div class="in">
+    <div class="who-mini"><div class="avatar" aria-hidden="true"><span>MA</span></div>Maria Ali</div>
+    <div class="nav"><button class="btn" type="button" id="next">Next project →</button><button class="btn primary" type="button" id="close">Close ✕</button></div>
+  </div></div>
+
+  <article class="sheet-in" data-p="credit-dashboard" hidden>
+    <header class="p-head">
+      <div class="eyebrow">Project 01 · Power BI</div>
+      <h2 id="h-credit-dashboard">Deals Under Credit &amp; Preliminary Assessment</h2>
+      <div class="meta"><span>Built for a Fiji finance company, 2026</span><span>Audience: Sales General Managers</span></div>
+      <p>Sales managers only received a count of applications from a manual Excel sheet. I replaced it with a live Power BI report showing every deal in assessment, who owns it, where it sits and how long it has been waiting.</p>
+    </header>
+    <div class="canvas" aria-label="Interactive dashboard">
+      <div class="dash-top">
+        <div class="dash-title">Deals Under Credit &amp; Preliminary Assessment</div>
+        <div class="kpi"><span class="k">Pending applications</span><span class="v" id="kpi">0</span></div>
+        <div class="ctrl"><label for="stage">Stage name</label>
+          <select id="stage"><option>Credit Assessment</option><option>Preliminary Assessment</option><option value="all">All stages</option></select>
+          <span class="note">Last updated <span class="mono">29-Oct-2026</span></span></div>
+      </div>
+      <div class="dash-mid">
+        <div class="tablebox"><table>
+          <thead><tr><th>Application no.</th><th>Stage</th><th>Account manager</th><th>Team</th><th>Branch</th><th>Position</th><th>Applicant</th><th>Days in stage</th></tr></thead>
+          <tbody id="rows"></tbody></table></div>
+        <div class="slicers">
+          <div><div class="sl-h">Team</div><div class="sl-list" id="sl-team"></div></div>
+          <div><div class="sl-h">Account manager position</div><div class="sl-list" id="sl-pos"></div></div>
+        </div>
+      </div>
+      <div class="charts">
+        <div class="chart"><h3>Average days in stage, by branch</h3><svg id="svg-days" role="img" aria-label="Average days in stage by branch"></svg></div>
+        <div class="chart"><h3>Applications by branch</h3><svg id="svg-count" role="img" aria-label="Number of applications by branch"></svg></div>
+      </div>
+      <div class="dash-foot"><span class="note">Click a team, position or bar to filter, as in Power BI. All names, branches and figures are fictional.</span><button class="reset" type="button" id="reset">Clear filters</button></div>
+    </div>
+    <div class="three">
+      <div class="panel"><h3>Problem</h3><p>GMs saw only how many applications were pending, not which deals were stuck or where.</p></div>
+      <div class="panel"><h3>What I built</h3><p>One report pulling scattered sources into a single view, with slicers by stage, team and role, and the average days each branch's deals spend in a stage.</p></div>
+      <div class="panel"><h3>Result</h3><p>GMs get real-time visibility of deal status by branch, without waiting for a manual Excel update.</p></div>
+    </div>
+  </article>
+
+  <article class="sheet-in" data-p="stock-trend" hidden>
+    <header class="p-head">
+      <div class="eyebrow">Project 02 · Python · Power BI</div>
+      <h2 id="h-stock-trend">Can a trend line predict share prices?</h2>
+      <div class="meta"><span>SC356 Capstone, University of the South Pacific, 2026</span><span>Group project, 3 members</span></div>
+      <p>A linear regression model of the US (SPY) and New Zealand (FNZ.NZ) markets from January 2022 to September 2026, using New Zealand as a rough guide to how Fiji's small stock exchange might behave.</p>
+    </header>
+    <div class="stats">
+      <div class="stat"><div class="v">+70%</div><div class="k">US market growth since Jan 2022. NZ barely moved.</div></div>
+      <div class="stat"><div class="v">0.91</div><div class="k">R² of the US trend line, a strong fit on paper</div></div>
+      <div class="stat"><div class="v">7.1% / 4.0%</div><div class="k">Trend-line error (RMSE), US vs NZ. A higher R² did not mean a smaller error.</div></div>
+      <div class="stat"><div class="v">r = 0.39</div><div class="k">NZ follows the US the next day (same day r = 0.07)</div></div>
+    </div>
+    <div class="three">
+      <div class="panel"><h3>Method</h3><p>A Python pipeline in Jupyter downloaded daily prices, aligned time zones, removed duplicates, filled holiday gaps, flagged outliers and used Adjusted Close. An OLS trend was fitted to each market.</p></div>
+      <div class="panel"><h3>Finding</h3><p>Both trends rise, but prices sit above or below the line for months (Durbin-Watson near 0), so the line looks more certain than it is. Tested on 2026 prices, the US trend only just beat a simple no-change forecast (7.7% vs 8.0% error); the NZ trend did worse.</p></div>
+      <div class="panel"><h3>So what for Fiji</h3><p>Use a trend line to describe the past, not to predict prices. We recommended the SPX and RBF publish daily historical prices so the work can be repeated on Fijian stocks.</p></div>
+    </div>
+    <div class="seg" role="group" aria-label="Choose market">
+      <button type="button" class="segb" data-mkt="US" aria-pressed="true">US market (SPY)</button>
+      <button type="button" class="segb" data-mkt="NZ" aria-pressed="false">NZ market (FNZ.NZ)</button>
+    </div>
+    <div class="vis2">
+      <figure class="viz"><figcaption><b>Price and fitted trend line</b><span>Index, January 2022 = 100</span></figcaption>
+        <div class="plot" id="p-trend"><svg role="img" aria-label="Price index and fitted OLS trend line"></svg></div>
+        <div class="legend"><span><i class="sw solid"></i>Price</span><span><i class="sw dash"></i>OLS trend line</span></div></figure>
+      <figure class="viz"><figcaption><b>Forecast to December 2027</b><span id="fc-unit">USD</span></figcaption>
+        <div class="plot" id="p-fc"><svg role="img" aria-label="2026 prices and trend forecast to end of 2027 with 95% range"></svg></div>
+        <div class="legend"><span><i class="sw solid"></i>2026 price</span><span><i class="sw dash"></i>Trend forecast</span><span><i class="sw band"></i>95% range</span></div></figure>
+    </div>
+    <div class="score">
+      <h3>Can we trust the trend line? Five checks from our hypothesis test</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Check</th><th>Rule</th><th>US</th><th>NZ</th></tr></thead>
+        <tbody>
+          <tr><td>Fit</td><td>R² ≥ 0.70</td><td><span class="pf ok">Pass · 0.91</span></td><td><span class="pf no">Fail · 0.60</span></td></tr>
+          <tr><td>Accuracy</td><td>RMSE ≤ 10% of average price</td><td><span class="pf ok">Pass · 7.1%</span></td><td><span class="pf ok">Pass · 4.0%</span></td></tr>
+          <tr><td>Stability</td><td>Every year's RMSE ≤ 10%</td><td><span class="pf no">Fail · 14.4% in 2022</span></td><td><span class="pf ok">Pass</span></td></tr>
+          <tr><td>No autocorrelation</td><td>Durbin-Watson 1.5–2.5</td><td><span class="pf no">Fail · 0.02</span></td><td><span class="pf no">Fail · 0.03</span></td></tr>
+          <tr><td>Constant variance</td><td>Breusch-Pagan p ≥ 0.05</td><td><span class="pf no">Fail</span></td><td><span class="pf no">Fail</span></td></tr>
+        </tbody></table></div>
+      <p class="note">Each market met only 2 of 5 checks, so we did not reject the null hypothesis: a straight trend line is not a reliable predictor of either market.</p>
+    </div>
+  </article>
+
+  <article class="sheet-in" data-p="timesheet" hidden>
+    <header class="p-head">
+      <div class="eyebrow">Project 03 · Web app</div>
+      <h2 id="h-timesheet">Digital timesheet &amp; approval system</h2>
+      <div class="meta"><span>Merchant Finance (Pte) Limited, 2026</span><span>Built solo</span></div>
+      <p>When my supervisor relocated to Samoa, paper timesheets could no longer be signed. I built a web app so interns submit online and approvals happen remotely. Try the full flow below: it is a working replica with fictional names.</p>
+    </header>
+    <div class="flow">
+      <div class="panel"><h3>Submit</h3><p class="note" style="font-size:15px;color:var(--ink-2)">The intern fills in the week's hours. On submission, the app emails a secure approval link, restricted to the supervisor's email address.</p></div>
+      <div class="panel"><h3>Approve</h3><p class="note" style="font-size:15px;color:var(--ink-2)">The supervisor reviews and signs off from anywhere, without paper or scanning.</p></div>
+      <div class="panel"><h3>Send to HR</h3><p class="note" style="font-size:15px;color:var(--ink-2)">The approved timesheet comes back as a PDF, ready to submit to HR.</p></div>
+    </div>
+    <div class="ts-app" id="ts-app" aria-label="Interactive timesheet demo">
+      <div class="ts-chrome"><span class="dots"><i></i><i></i><i></i></span><span class="ts-url mono" id="ts-url">intern-timesheet.demo/login</span><span class="ts-tag">Demo · fictional data</span></div>
+      <ol class="ts-steps" id="ts-steps"><li data-s="login">Sign in</li><li data-s="sheet">Fill in week</li><li data-s="email">Email sent</li><li data-s="approve">Supervisor approves</li><li data-s="pdf">PDF for HR</li></ol>
+      <div class="ts-stage">
+
+        <!-- LOGIN -->
+        <section class="ts-view" data-v="login">
+          <form class="ts-login" id="ts-login" novalidate>
+            <h4 class="ts-co">Coral Coast Finance Ltd</h4>
+            <p class="ts-sub">Timesheet Sign In</p>
+            <label for="ts-email">Email address</label><input id="ts-email" type="email" value="ana.tamani@coralcoast.demo" autocomplete="off">
+            <label for="ts-pw">Password</label><input id="ts-pw" type="password" value="demo-password" autocomplete="off">
+            <p class="ts-err" id="ts-login-err" hidden></p>
+            <button class="ts-btn" type="submit">Sign In</button>
+            <p class="ts-hint">Details are pre-filled. Press Sign In.</p>
+          </form>
+        </section>
+
+        <!-- TIMESHEET -->
+        <section class="ts-view" data-v="sheet" hidden>
+          <div class="ts-head"><h4>Coral Coast Finance Ltd</h4><span>Intern Timesheet</span></div>
+          <div class="ts-meta">
+            <div class="ts-name"><label for="ts-intern">Intern name</label><input id="ts-intern" value="Ana Tamani"></div>
+            <div><span class="ts-k">Week starting</span><span class="mono" id="ts-week"></span></div>
+            <div><span class="ts-k">Status</span><span class="ts-status" id="ts-status">Draft</span></div>
+          </div>
+          <h5 class="ts-h">Daily timesheet</h5>
+          <div class="ts-scroll"><table class="ts-table">
+            <thead><tr><th>Day</th><th>Date</th><th>Status</th><th>Time in</th><th>Time out</th><th>Hours</th><th>Tasks completed</th></tr></thead>
+            <tbody id="ts-rows"></tbody>
+          </table></div>
+          <div class="ts-sum"><div><span class="ts-k">Total hours worked</span><b class="mono" id="ts-total">0.00</b></div><p class="ts-err" id="ts-sheet-err" hidden></p></div>
+          <h5 class="ts-h">Weekly comments</h5>
+          <textarea id="ts-comments" class="ts-ta" rows="2">Finished the dashboard handover notes; leave on Friday approved in advance.</textarea>
+          <h5 class="ts-h">Intern signature</h5>
+          <div class="ts-sigrow"><canvas class="ts-sig" id="sig-intern" width="420" height="120" aria-label="Signature pad: draw your signature"></canvas>
+            <div class="ts-sigside"><button type="button" class="ts-btn ghost" data-clear="sig-intern">Clear</button><button type="button" class="ts-btn ghost" data-auto="sig-intern">Sign for me</button></div></div>
+          <div class="ts-actions">
+            <button type="button" class="ts-btn ghost" id="ts-save">Save Draft</button>
+            <button type="button" class="ts-btn" id="ts-submit">Submit to Supervisor</button>
+          </div>
+        </section>
+
+        <!-- EMAIL -->
+        <section class="ts-view" data-v="email" hidden>
+          <div class="ts-mail">
+            <div class="ts-mail-h"><div><span class="ts-k">To</span> supervisor.samoa@coralcoast.demo</div><div><span class="ts-k">From</span> timesheets@coralcoast.demo</div><div><span class="ts-k">Subject</span> <b id="ts-mail-subj"></b></div></div>
+            <div class="ts-mail-b">
+              <p>Hello,</p>
+              <p><b id="ts-mail-name"></b> has submitted a timesheet for the week starting <span id="ts-mail-week"></span> (<b id="ts-mail-hrs"></b> hours).</p>
+              <p>This link only works when signed in as <span class="mono">supervisor.samoa@coralcoast.demo</span>.</p>
+              <button type="button" class="ts-btn" id="ts-open-link">Review and approve timesheet</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- APPROVE -->
+        <section class="ts-view" data-v="approve" hidden>
+          <div class="ts-head"><h4>Supervisor review</h4><span>Signed in as supervisor.samoa@coralcoast.demo</span></div>
+          <div class="ts-review" id="ts-review"></div>
+          <h5 class="ts-h">Supervisor signature</h5>
+          <div class="ts-sigrow"><canvas class="ts-sig" id="sig-sup" width="420" height="120" aria-label="Supervisor signature pad"></canvas>
+            <div class="ts-sigside"><button type="button" class="ts-btn ghost" data-clear="sig-sup">Clear</button><button type="button" class="ts-btn ghost" data-auto="sig-sup">Sign for me</button></div></div>
+          <p class="ts-err" id="ts-appr-err" hidden></p>
+          <div class="ts-actions"><button type="button" class="ts-btn ghost" id="ts-return">Return to intern</button><button type="button" class="ts-btn" id="ts-approve">Approve</button></div>
+        </section>
+
+        <!-- PDF -->
+        <section class="ts-view" data-v="pdf" hidden>
+          <div class="ts-pdfwrap"><div class="ts-pdf" id="ts-pdf"></div></div>
+          <div class="ts-actions"><span class="ts-hint">In the real app, this exports as a PDF for HR.</span><button type="button" class="ts-btn ghost" id="ts-restart">Start again</button></div>
+        </section>
+        <div class="ts-toast" id="ts-toast" role="status" hidden></div>
+      </div>
+    </div>
+
+  </article>
+
+  <article class="sheet-in" data-p="reconciliation" hidden>
+    <header class="p-head">
+      <div class="eyebrow">Project 04 · Python testing</div>
+      <h2 id="h-reconciliation">Payment reconciliation testing</h2>
+      <div class="meta"><span>Merchant Finance (Pte) Limited, 2026</span><span>For the Finance team</span></div>
+      <p>Before a new Python reconciliation tool went live, I tested it against one and a half weeks of bank statements, checked every match by hand and reported the results to the Manager, Data &amp; Insights.</p>
+    </header>
+    <div class="flow">
+      <div class="panel"><h3>Run</h3><p class="note" style="font-size:15px;color:var(--ink-2)">Ran the tool (local_runner.py) in a Python virtual environment in VS Code on the bank statement data.</p></div>
+      <div class="panel"><h3>Verify</h3><p class="note" style="font-size:15px;color:var(--ink-2)">Checked each matched payment by hand, along with the reasoning the tool gave for the match.</p></div>
+      <div class="panel"><h3>Report</h3><p class="note" style="font-size:15px;color:var(--ink-2)">Reported the results back to the Manager, Data &amp; Insights, before the tool was put into use.</p></div>
+    </div>
+  </article>
+</div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- sheet routing ---------- */
+const order=["credit-dashboard","stock-trend","timesheet","reconciliation"];
+const sheet=$("sheet");let lastFocus=null;
+function show(id){
+  sheet.querySelectorAll(".sheet-in").forEach(a=>a.hidden=a.dataset.p!==id);
+  sheet.setAttribute("aria-labelledby","h-"+id);
+  sheet.hidden=false;document.body.classList.add("locked");sheet.scrollTop=0;
+  if(id==="credit-dashboard")render();if(id==="stock-trend")drawSC();
+  $("close").focus({preventScroll:true});
+}
+function hide(){sheet.hidden=true;document.body.classList.remove("locked");if(lastFocus)lastFocus.focus({preventScroll:true});}
+function route(){const id=location.hash.slice(1);order.includes(id)?show(id):(!sheet.hidden&&hide());}
+document.querySelectorAll("[data-open]").forEach(c=>c.addEventListener("click",()=>{lastFocus=c;location.hash=c.dataset.open;}));
+$("close").onclick=()=>{location.hash="work-list";};
+$("next").onclick=()=>{const i=order.indexOf(location.hash.slice(1));location.hash=order[(i+1)%order.length];};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!sheet.hidden)location.hash="work-list";});
+window.addEventListener("hashchange",route);
+
+/* ---------- copy email ---------- */
+document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",()=>{
+  const span=b.querySelector("span"),txt=b.dataset.copy;const done=()=>{span.textContent="Email copied";setTimeout(()=>span.textContent=txt,1600);};
+  try{navigator.clipboard.writeText(txt).then(done,()=>getSelection().selectAllChildren(span));}catch(e){getSelection().selectAllChildren(span);}
+}));
+
+/* ---------- fictional dashboard data ---------- */
+let s=20261029;const rnd=()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296;};
+const pick=a=>a[Math.floor(rnd()*a.length)];
+const branches={Central:["Harbourside","Lagoon Bay","Palm Grove"],North:["Northpoint","Riverbend"],West:["Westgate","Coralview","Sunset Coast"],"Partner Finance":["Partner Finance","Reefside"]};
+const weight={"Harbourside":1.2,"Lagoon Bay":.8,"Palm Grove":.6,"Northpoint":1.4,"Riverbend":1,"Westgate":1.3,"Coralview":.9,"Sunset Coast":.5,"Partner Finance":1.6,"Reefside":.7};
+const baseDays={"Harbourside":9,"Lagoon Bay":14,"Palm Grove":11,"Northpoint":32,"Riverbend":44,"Westgate":12,"Coralview":18,"Sunset Coast":7,"Partner Finance":20,"Reefside":26};
+const first=["Ana","Sefo","Priya","Josefa","Mere","Rahul","Litia","Vikash","Salote","Karan","Elenoa","Tevita","Asha","Inoke"];
+const last=["Tamani","Narayan","Waqa","Kumar","Ravai","Singh","Lomani","Prasad","Vuki","Chand","Raiwalu","Devi"];
+const managers=[];for(let i=0;i<22;i++)managers.push(pick(first)+" "+pick(last));
+const positions=["Lending Officer","Lending Officer","Lending Officer","Team Leader","Team Leader","Branch Manager","Customer Service Officer"];
+const bizA=["Coral","Island","Pacific","Blue Lagoon","Mango","Kava Root","Reef","Highland","Tidewater","Breadfruit","Sugarcane","Bula"];
+const bizB=["Hardware","Transport","Farms","Bakery","Carriers","Construction","Tours","Traders","Fisheries","Motors","Supplies","Holdings"];
+const bizC=["Pte Ltd","Limited","& Sons","Co."];
+const teamList=Object.keys(branches);const pool=[];teamList.forEach(t=>branches[t].forEach(b=>pool.push([t,b])));
+const deals=[];let app=8200;
+for(let i=0;i<150;i++){
+  let tot=0;pool.forEach(p=>tot+=weight[p[1]]);let r=rnd()*tot,tb=pool[0];
+  for(const p of pool){r-=weight[p[1]];if(r<=0){tb=p;break;}}
+  app+=Math.floor(20+rnd()*45);
+  const stage=rnd()<.58?"Credit Assessment":"Preliminary Assessment";
+  const d=Math.max(1,Math.round(baseDays[tb[1]]*(stage==="Credit Assessment"?1.15:.8)*(.4+rnd()*1.2)));
+  deals.push({app,stage,mgr:pick(managers),team:tb[0],branch:tb[1],pos:pick(positions),biz:pick(bizA)+" "+pick(bizB)+" "+pick(bizC),days:d});
+}
+const st={stage:"Credit Assessment",team:new Set(),pos:new Set(),branch:null};
+const byStage=()=>deals.filter(d=>st.stage==="all"||d.stage===st.stage);
+const passes=(d,skip)=>(skip==="team"||!st.team.size||st.team.has(d.team))&&(skip==="pos"||!st.pos.size||st.pos.has(d.pos))&&(skip==="branch"||!st.branch||d.branch===st.branch);
+
+function slicer(el,key,values){
+  const counts={};byStage().filter(d=>passes(d,key)).forEach(d=>counts[d[key]]=(counts[d[key]]||0)+1);
+  el.innerHTML="";
+  values.forEach(v=>{const b=document.createElement("button");b.type="button";b.className="sl-item";const on=st[key].has(v);
+    b.setAttribute("aria-pressed",on);if(st[key].size&&!on)b.classList.add("dim");
+    b.innerHTML=`<span>${esc(v)}</span><span class="c">${counts[v]||0}</span>`;
+    b.onclick=()=>{on?st[key].delete(v):st[key].add(v);render();};el.appendChild(b);});
+}
+function bars(svg,data,color,label){
+  const W=520,H=270,m={t:22,r:8,b:78,l:34};const max=Math.max(1,...data.map(d=>d.v));const n=Math.max(data.length,1);
+  const bw=(W-m.l-m.r)/n;const y=v=>m.t+(H-m.t-m.b)*(1-v/max);
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  let h=`<line x1="${m.l}" x2="${W-m.r}" y1="${H-m.b}" y2="${H-m.b}" stroke="var(--line)"/>`;
+  data.forEach((d,i)=>{const x=m.l+i*bw+bw*.14,w=bw*.72,top=y(d.v),hg=Math.max(1,H-m.b-top),rr=Math.min(4,w/2,hg);
+    const off=st.branch&&st.branch!==d.k?" off":"";
+    const path=`M${x},${H-m.b} V${top+rr} Q${x},${top} ${x+rr},${top} H${x+w-rr} Q${x+w},${top} ${x+w},${top+rr} V${H-m.b} Z`;
+    h+=`<g class="bar${off}" data-k="${esc(d.k)}" data-v="${d.v}" tabindex="0" role="button" aria-label="${esc(d.k)}: ${d.v} ${label}">
+      <rect x="${m.l+i*bw}" y="${m.t}" width="${bw}" height="${H-m.t-m.b}" fill="transparent"/><path d="${path}" fill="${color}"/>
+      <text x="${x+w/2}" y="${top-6}" text-anchor="middle" font-size="12" fill="var(--ink-2)" font-family="JetBrains Mono, monospace">${d.v}</text>
+      <text transform="translate(${x+w/2},${H-m.b+12}) rotate(-38)" text-anchor="end" font-size="12" fill="var(--ink-2)">${esc(d.k)}</text></g>`;});
+  if(!data.length)h+=`<text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--ink-3)" font-size="14">No applications match these filters</text>`;
+  svg.innerHTML=h;
+  const box=svg.parentElement;let tip=box.querySelector(".tip");
+  if(!tip){tip=document.createElement("div");tip.className="tip";tip.hidden=true;box.appendChild(tip);}
+  svg.querySelectorAll(".bar").forEach(g=>{
+    const showTip=()=>{const r=g.querySelector("path").getBoundingClientRect(),b=box.getBoundingClientRect();
+      tip.textContent=`${g.dataset.k}: ${g.dataset.v} ${label}`;tip.style.left=(r.left-b.left+r.width/2)+"px";tip.style.top=(r.top-b.top)+"px";tip.hidden=false;};
+    g.addEventListener("mouseenter",showTip);g.addEventListener("focus",showTip);
+    g.addEventListener("mouseleave",()=>tip.hidden=true);g.addEventListener("blur",()=>tip.hidden=true);
+    const act=()=>{st.branch=st.branch===g.dataset.k?null:g.dataset.k;tip.hidden=true;render();};
+    g.addEventListener("click",act);g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act();}});});
+}
+function render(){
+  const rows=byStage().filter(d=>passes(d));$("kpi").textContent=rows.length;
+  $("rows").innerHTML=rows.slice().sort((a,b)=>b.days-a.days).map(d=>`<tr><td class="num">${d.app}</td><td>${d.stage}</td><td>${esc(d.mgr)}</td><td>${d.team}</td><td>${d.branch}</td><td>${d.pos}</td><td>${esc(d.biz)}</td><td class="num">${d.days}</td></tr>`).join("")||`<tr><td colspan="8">No applications match these filters.</td></tr>`;
+  slicer($("sl-team"),"team",teamList);
+  slicer($("sl-pos"),"pos",["Lending Officer","Team Leader","Branch Manager","Customer Service Officer"]);
+  const g={};byStage().filter(d=>passes(d,"branch")).forEach(d=>{(g[d.branch]=g[d.branch]||[]).push(d.days);});
+  bars($("svg-days"),Object.entries(g).map(([k,a])=>({k,v:Math.round(a.reduce((x,y)=>x+y,0)/a.length)})).sort((a,b)=>b.v-a.v),"var(--bar1)","days on average");
+  bars($("svg-count"),Object.entries(g).map(([k,a])=>({k,v:a.length})).sort((a,b)=>b.v-a.v),"var(--teal)","applications");
+}
+
+/* ---------- SC356 charts ---------- */
+const SC={"US":{"idx":[["2022-01-03",100.0,70.1],["2022-01-10",97.4,70.5],["2022-01-18",95.6,70.9],["2022-01-25",90.9,71.3],["2022-02-01",94.8,71.7],["2022-02-08",94.4,72.1],["2022-02-15",93.4,72.5],["2022-02-23",88.3,72.8],["2022-03-02",91.7,73.2],["2022-03-09",89.5,73.6],["2022-03-16",91.2,74.0],["2022-03-23",93.2,74.4],["2022-03-30",96.3,74.8],["2022-04-06",93.8,75.2],["2022-04-13",93.1,75.6],["2022-04-21",92.0,75.9],["2022-04-28",89.8,76.3],["2022-05-05",86.9,76.7],["2022-05-12",82.4,77.1],["2022-05-19",81.8,77.5],["2022-05-26",85.1,77.9],["2022-06-03",86.2,78.3],["2022-06-10",81.9,78.6],["2022-06-17",77.2,79.0],["2022-06-27",81.9,79.4],["2022-07-05",80.6,79.8],["2022-07-12",80.3,80.2],["2022-07-19",82.7,80.6],["2022-07-26",82.4,81.0],["2022-08-02",86.1,81.4],["2022-08-09",86.7,81.7],["2022-08-16",90.6,82.1],["2022-08-23",87.0,82.5],["2022-08-30",84.0,82.9],["2022-09-07",83.9,83.3],["2022-09-14",83.2,83.7],["2022-09-21",79.9,84.1],["2022-09-28",78.5,84.4],["2022-10-05",79.9,84.8],["2022-10-12",75.5,85.2],["2022-10-19",78.0,85.6],["2022-10-26",80.9,86.0],["2022-11-02",79.4,86.4],["2022-11-09",79.2,86.8],["2022-11-16",83.7,87.1],["2022-11-23",85.2,87.5],["2022-12-01",86.3,87.9],["2022-12-08",83.9,88.3],["2022-12-15",82.5,88.7],["2022-12-22",81.0,89.1],["2022-12-30",81.4,89.5],["2023-01-09",82.5,89.9],["2023-01-17",84.6,90.2],["2023-01-24",85.1,90.6],["2023-01-31",86.5,91.0],["2023-02-07",88.3,91.4],["2023-02-14",87.8,91.8],["2023-02-22",84.8,92.2],["2023-03-01",84.0,92.6],["2023-03-08",84.9,92.9],["2023-03-15",82.8,93.3],["2023-03-22",83.7,93.7],["2023-03-29",85.7,94.1],["2023-04-05",87.0,94.5],["2023-04-13",88.3,94.9],["2023-04-20",88.0,95.3],["2023-04-27",88.1,95.7],["2023-05-04",86.5,96.0],["2023-05-11",88.0,96.4],["2023-05-18",89.5,96.8],["2023-05-25",88.5,97.2],["2023-06-02",91.4,97.6],["2023-06-09",91.8,98.0],["2023-06-16",94.2,98.4],["2023-06-26",92.5,98.7],["2023-07-03",95.1,99.1],["2023-07-11",94.8,99.5],["2023-07-18",97.3,99.9],["2023-07-25",97.6,100.3],["2023-08-01",97.8,100.7],["2023-08-08",96.2,101.1],["2023-08-15",94.9,101.5],["2023-08-22",93.9,101.8],["2023-08-29",96.3,102.2],["2023-09-06",95.6,102.6],["2023-09-13",95.7,103.0],["2023-09-20",94.3,103.4],["2023-09-27",91.6,103.8],["2023-10-04",91.3,104.2],["2023-10-11",93.8,104.5],["2023-10-18",92.5,104.9],["2023-10-25",89.8,105.3],["2023-11-01",90.9,105.7],["2023-11-08",94.0,106.1],["2023-11-15",96.7,106.5],["2023-11-22",97.9,106.9],["2023-11-30",98.2,107.3],["2023-12-07",98.6,107.6],["2023-12-14",101.5,108.0],["2023-12-21",102.1,108.4],["2023-12-29",102.6,108.8],["2024-01-08",102.5,109.2],["2024-01-16",102.6,109.6],["2024-01-23",104.7,110.0],["2024-01-30",106.0,110.3],["2024-02-06",106.7,110.7],["2024-02-13",106.7,111.1],["2024-02-21",107.4,111.5],["2024-02-28",109.3,111.9],["2024-03-06",110.1,112.3],["2024-03-13",111.4,112.7],["2024-03-20",112.8,113.1],["2024-03-27",113.3,113.4],["2024-04-04",111.1,113.8],["2024-04-11",112.2,114.2],["2024-04-18",108.2,114.6],["2024-04-25",109.1,115.0],["2024-05-02",109.4,115.4],["2024-05-09",112.7,115.8],["2024-05-16",114.5,116.1],["2024-05-23",113.9,116.5],["2024-05-31",114.2,116.9],["2024-06-07",115.7,117.3],["2024-06-14",117.6,117.7],["2024-06-24",118.0,118.1],["2024-07-01",118.5,118.5],["2024-07-09",120.8,118.8],["2024-07-16",122.8,119.2],["2024-07-23",120.4,119.6],["2024-07-30",117.8,120.0],["2024-08-06",113.5,120.4],["2024-08-13",117.8,120.8],["2024-08-20",121.4,121.2],["2024-08-27",122.0,121.6],["2024-09-04",119.7,121.9],["2024-09-11",120.5,122.3],["2024-09-18",122.0,122.7],["2024-09-25",124.3,123.1],["2024-10-02",124.0,123.5],["2024-10-09",125.8,123.9],["2024-10-16",126.9,124.3],["2024-10-23",126.0,124.6],["2024-10-30",126.4,125.0],["2024-11-06",128.8,125.4],["2024-11-13",130.2,125.8],["2024-11-20",128.7,126.2],["2024-11-27",130.5,126.6],["2024-12-05",132.3,127.0],["2024-12-12",131.7,127.4],["2024-12-19",127.8,127.7],["2024-12-27",130.1,128.1],["2025-01-06",130.2,128.5],["2025-01-14",127.3,128.9],["2025-01-22",132.6,129.3],["2025-01-29",131.6,129.7],["2025-02-05",132.2,130.1],["2025-02-12",132.0,130.4],["2025-02-20",133.5,130.8],["2025-02-27",128.0,131.2],["2025-03-06",125.3,131.6],["2025-03-13",120.6,132.0],["2025-03-20",123.7,132.4],["2025-03-27",124.4,132.8],["2025-04-03",117.7,133.2],["2025-04-10",115.1,133.5],["2025-04-17",115.5,133.9],["2025-04-25",120.8,134.3],["2025-05-02",124.3,134.7],["2025-05-09",123.8,135.1],["2025-05-16",130.4,135.5],["2025-05-23",127.1,135.9],["2025-06-02",130.0,136.2],["2025-06-09",131.6,136.6],["2025-06-16",132.2,137.0],["2025-06-24",133.5,137.4],["2025-07-01",135.9,137.8],["2025-07-09",137.3,138.2],["2025-07-16",137.4,138.6],["2025-07-23",139.6,139.0],["2025-07-30",139.6,139.3],["2025-08-06",139.2,139.7],["2025-08-13",141.9,140.1],["2025-08-20",140.4,140.5],["2025-08-27",142.3,140.9],["2025-09-04",142.8,141.3],["2025-09-11",144.7,141.7],["2025-09-18",145.7,142.0],["2025-09-25",145.2,142.4],["2025-10-02",147.7,142.8],["2025-10-09",148.1,143.2],["2025-10-16",145.8,143.6],["2025-10-23",148.2,144.0],["2025-10-30",150.0,144.4],["2025-11-06",147.9,144.8],["2025-11-13",148.3,145.1],["2025-11-20",144.0,145.5],["2025-11-28",150.8,145.9],["2025-12-05",151.3,146.3],["2025-12-12",150.4,146.7],["2025-12-19",150.6,147.1],["2025-12-29",152.2,147.5],["2026-01-06",153.1,147.8],["2026-01-13",153.5,148.2],["2026-01-21",151.7,148.6],["2026-01-28",153.9,149.0],["2026-02-04",151.9,149.4],["2026-02-11",153.1,149.8],["2026-02-19",151.5,150.2],["2026-02-26",152.5,150.5],["2026-03-05",150.8,150.9],["2026-03-12",147.4,151.3],["2026-03-19",146.0,151.7],["2026-03-26",143.1,152.1],["2026-04-02",145.5,152.5],["2026-04-10",150.8,152.9],["2026-04-17",157.6,153.3],["2026-04-24",158.4,153.6],["2026-05-01",159.9,154.0],["2026-05-08",163.7,154.4],["2026-05-15",164.0,154.8],["2026-05-22",165.5,155.2],["2026-06-01",168.3,155.6],["2026-06-08",164.0,156.0],["2026-06-15",167.5,156.3],["2026-06-23",163.2,156.7],["2026-06-30",166.1,157.1],["2026-07-08",165.8,157.5],["2026-07-15",167.9,157.9],["2026-07-22",166.3,158.3],["2026-07-29",162.3,158.7],["2026-08-05",171.3,159.1],["2026-08-12",171.9,159.4],["2026-08-19",171.1,159.8],["2026-08-26",170.4,160.2],["2026-09-02",170.2,160.6],["2026-09-10",168.6,161.0],["2026-09-17",169.7,161.4],["2026-09-24",171.1,161.8],["2026-09-30",170.1,162.1]],"act":[["2026-01-02",677.9],["2026-01-07",684.2],["2026-01-12",689.8],["2026-01-15",686.9],["2026-01-21",680.1],["2026-01-26",687.4],["2026-01-29",688.7],["2026-02-03",684.2],["2026-02-06",685.3],["2026-02-11",686.6],["2026-02-17",677.6],["2026-02-20",684.1],["2026-02-25",687.8],["2026-03-02",681.1],["2026-03-05",676.0],["2026-03-10",671.9],["2026-03-13",657.2],["2026-03-18",656.3],["2026-03-23",652.1],["2026-03-26",641.8],["2026-03-31",647.1],["2026-04-06",655.6],["2026-04-09",676.5],["2026-04-14",691.0],["2026-04-17",706.6],["2026-04-22",707.6],["2026-04-27",711.6],["2026-04-30",715.0],["2026-05-05",720.1],["2026-05-08",733.9],["2026-05-13",738.6],["2026-05-18",734.9],["2026-05-21",739.0],["2026-05-27",746.7],["2026-06-01",754.7],["2026-06-04",753.3],["2026-06-09",733.3],["2026-06-12",738.0],["2026-06-17",737.2],["2026-06-23",731.8],["2026-06-26",727.2],["2026-07-01",743.9],["2026-07-07",745.9],["2026-07-10",753.1],["2026-07-15",752.9],["2026-07-20",740.3],["2026-07-23",736.4],["2026-07-28",739.0],["2026-07-31",745.2],["2026-08-05",767.9],["2026-08-10",771.1],["2026-08-13",776.0],["2026-08-18",765.5],["2026-08-21",763.8],["2026-08-26",764.2],["2026-08-31",765.1],["2026-09-03",771.3],["2026-09-09",760.5],["2026-09-14",759.0],["2026-09-17",760.7],["2026-09-22",773.4],["2026-09-25",771.3],["2026-09-30",762.6]],"fc":[["2026-10-01",727.0,654.5,799.6],["2026-10-12",729.5,656.9,802.0],["2026-10-21",731.9,659.3,804.4],["2026-10-30",734.3,661.8,806.8],["2026-11-10",736.7,664.2,809.3],["2026-11-19",739.2,666.6,811.7],["2026-11-30",741.6,669.0,814.1],["2026-12-09",744.0,671.5,816.6],["2026-12-18",746.4,673.9,819.0],["2026-12-29",748.9,676.3,821.4],["2027-01-07",751.3,678.7,823.8],["2027-01-18",753.7,681.2,826.3],["2027-01-27",756.1,683.6,828.7],["2027-02-05",758.6,686.0,831.1],["2027-02-16",761.0,688.4,833.6],["2027-02-25",763.4,690.9,836.0],["2027-03-08",765.9,693.3,838.4],["2027-03-17",768.3,695.7,840.8],["2027-03-26",770.7,698.1,843.3],["2027-04-06",773.1,700.6,845.7],["2027-04-15",775.6,703.0,848.1],["2027-04-26",778.0,705.4,850.6],["2027-05-05",780.4,707.8,853.0],["2027-05-14",782.8,710.3,855.4],["2027-05-25",785.3,712.7,857.9],["2027-06-03",787.7,715.1,860.3],["2027-06-14",790.1,717.5,862.7],["2027-06-23",792.5,720.0,865.1],["2027-07-02",795.0,722.4,867.6],["2027-07-13",797.4,724.8,870.0],["2027-07-22",799.8,727.2,872.4],["2027-08-02",802.3,729.6,874.9],["2027-08-11",804.7,732.1,877.3],["2027-08-20",807.1,734.5,879.7],["2027-08-31",809.5,736.9,882.1],["2027-09-09",812.0,739.3,884.6],["2027-09-20",814.4,741.8,887.0],["2027-09-29",816.8,744.2,889.4],["2027-10-08",819.2,746.6,891.9],["2027-10-19",821.7,749.0,894.3],["2027-10-28",824.1,751.5,896.7],["2027-11-08",826.5,753.9,899.2],["2027-11-17",828.9,756.3,901.6],["2027-11-26",831.4,758.7,904.0],["2027-12-07",833.8,761.2,906.4],["2027-12-16",836.2,763.6,908.9],["2027-12-27",838.7,766.0,911.3],["2027-12-31",840.0,767.4,912.7]]},"NZ":{"idx":[["2022-01-05",100.0,85.5],["2022-01-12",97.5,85.6],["2022-01-19",96.8,85.7],["2022-01-26",93.2,85.7],["2022-02-02",93.4,85.8],["2022-02-10",95.3,85.9],["2022-02-17",93.5,85.9],["2022-02-24",90.7,86.0],["2022-03-03",93.9,86.1],["2022-03-10",91.1,86.1],["2022-03-17",92.0,86.2],["2022-03-24",92.8,86.2],["2022-03-31",93.4,86.3],["2022-04-07",92.9,86.4],["2022-04-14",92.0,86.4],["2022-04-26",91.4,86.5],["2022-05-03",90.3,86.6],["2022-05-10",86.9,86.6],["2022-05-17",86.0,86.7],["2022-05-24",87.3,86.8],["2022-05-31",87.5,86.8],["2022-06-08",87.1,86.9],["2022-06-15",82.1,87.0],["2022-06-22",82.7,87.0],["2022-06-30",84.0,87.1],["2022-07-07",85.7,87.2],["2022-07-14",86.3,87.2],["2022-07-21",86.9,87.3],["2022-07-28",87.4,87.4],["2022-08-04",90.7,87.4],["2022-08-11",91.3,87.5],["2022-08-18",91.8,87.6],["2022-08-25",90.3,87.6],["2022-09-01",90.3,87.7],["2022-09-08",90.3,87.8],["2022-09-15",90.3,87.8],["2022-09-22",89.5,87.9],["2022-09-30",86.1,88.0],["2022-10-07",85.9,88.0],["2022-10-14",84.4,88.1],["2022-10-21",83.5,88.2],["2022-10-31",87.2,88.2],["2022-11-07",86.9,88.3],["2022-11-14",86.7,88.4],["2022-11-21",88.2,88.4],["2022-11-28",87.0,88.5],["2022-12-05",89.3,88.6],["2022-12-12",88.3,88.6],["2022-12-19",88.1,88.7],["2022-12-28",87.9,88.7],["2023-01-06",88.9,88.8],["2023-01-13",89.4,88.9],["2023-01-20",91.0,88.9],["2023-01-27",91.6,89.0],["2023-02-03",92.5,89.1],["2023-02-13",91.9,89.1],["2023-02-20",89.5,89.2],["2023-02-27",89.1,89.3],["2023-03-06",90.2,89.3],["2023-03-13",88.0,89.4],["2023-03-20",87.1,89.5],["2023-03-27",86.8,89.5],["2023-04-03",89.1,89.6],["2023-04-12",89.3,89.7],["2023-04-19",89.1,89.7],["2023-04-27",89.1,89.8],["2023-05-04",89.5,89.9],["2023-05-11",89.1,89.9],["2023-05-18",89.7,90.0],["2023-05-25",90.1,90.1],["2023-06-01",90.5,90.1],["2023-06-09",89.4,90.2],["2023-06-16",89.9,90.3],["2023-06-23",89.6,90.3],["2023-06-30",91.1,90.4],["2023-07-07",91.5,90.5],["2023-07-17",91.5,90.5],["2023-07-24",92.0,90.6],["2023-07-31",92.3,90.7],["2023-08-07",91.4,90.7],["2023-08-14",90.8,90.8],["2023-08-21",87.9,90.9],["2023-08-28",88.2,90.9],["2023-09-04",88.0,91.0],["2023-09-11",86.3,91.1],["2023-09-18",87.2,91.1],["2023-09-25",87.0,91.2],["2023-10-02",86.2,91.3],["2023-10-09",85.5,91.3],["2023-10-16",85.3,91.4],["2023-10-24",83.7,91.4],["2023-10-31",81.8,91.5],["2023-11-07",85.0,91.6],["2023-11-14",85.0,91.6],["2023-11-21",84.8,91.7],["2023-11-28",85.2,91.8],["2023-12-05",86.3,91.8],["2023-12-12",86.0,91.9],["2023-12-19",87.9,92.0],["2023-12-28",89.9,92.0],["2024-01-08",89.0,92.1],["2024-01-15",89.4,92.2],["2024-01-22",88.8,92.2],["2024-01-29",90.5,92.3],["2024-02-05",90.1,92.4],["2024-02-13",89.0,92.4],["2024-02-20",87.7,92.5],["2024-02-27",88.3,92.6],["2024-03-05",89.0,92.6],["2024-03-12",89.9,92.7],["2024-03-19",89.8,92.8],["2024-03-26",91.1,92.8],["2024-04-04",91.2,92.9],["2024-04-11",90.0,93.0],["2024-04-18",88.9,93.0],["2024-04-26",88.8,93.1],["2024-05-03",88.7,93.2],["2024-05-10",87.1,93.2],["2024-05-17",87.1,93.3],["2024-05-24",87.5,93.4],["2024-05-31",87.9,93.4],["2024-06-10",87.8,93.5],["2024-06-17",86.5,93.6],["2024-06-24",86.2,93.6],["2024-07-02",87.0,93.7],["2024-07-09",87.4,93.8],["2024-07-16",90.5,93.8],["2024-07-23",93.1,93.9],["2024-07-30",92.9,93.9],["2024-08-06",91.6,94.0],["2024-08-13",92.7,94.1],["2024-08-20",94.6,94.1],["2024-08-27",93.1,94.2],["2024-09-03",93.3,94.3],["2024-09-10",93.7,94.3],["2024-09-17",93.5,94.4],["2024-09-24",91.3,94.5],["2024-10-01",93.6,94.5],["2024-10-08",94.3,94.6],["2024-10-15",96.1,94.7],["2024-10-22",95.6,94.7],["2024-10-30",95.6,94.8],["2024-11-06",94.9,94.9],["2024-11-13",94.8,94.9],["2024-11-20",95.3,95.0],["2024-11-27",98.1,95.1],["2024-12-04",96.0,95.1],["2024-12-11",95.4,95.2],["2024-12-18",95.7,95.3],["2024-12-27",97.9,95.3],["2025-01-07",97.0,95.4],["2025-01-14",95.6,95.5],["2025-01-21",97.2,95.5],["2025-01-28",96.7,95.6],["2025-02-04",96.8,95.7],["2025-02-12",97.6,95.7],["2025-02-19",99.3,95.8],["2025-02-26",94.4,95.9],["2025-03-05",93.8,95.9],["2025-03-12",93.1,96.0],["2025-03-19",91.7,96.1],["2025-03-26",92.8,96.1],["2025-04-02",92.7,96.2],["2025-04-09",89.3,96.3],["2025-04-16",90.5,96.3],["2025-04-28",90.3,96.4],["2025-05-05",93.0,96.4],["2025-05-12",95.3,96.5],["2025-05-19",94.8,96.6],["2025-05-26",94.1,96.6],["2025-06-03",92.8,96.7],["2025-06-10",95.2,96.8],["2025-06-17",95.5,96.8],["2025-06-25",94.5,96.9],["2025-07-02",96.4,97.0],["2025-07-09",97.2,97.0],["2025-07-16",97.5,97.1],["2025-07-23",97.2,97.2],["2025-07-30",97.0,97.2],["2025-08-06",97.5,97.3],["2025-08-13",96.3,97.4],["2025-08-20",98.8,97.4],["2025-08-27",97.9,97.5],["2025-09-03",100.1,97.6],["2025-09-10",100.9,97.6],["2025-09-17",100.9,97.7],["2025-09-24",99.9,97.8],["2025-10-01",102.9,97.8],["2025-10-08",103.9,97.9],["2025-10-15",102.3,98.0],["2025-10-22",102.1,98.0],["2025-10-31",103.6,98.1],["2025-11-07",103.4,98.2],["2025-11-14",103.0,98.2],["2025-11-21",102.9,98.3],["2025-11-28",103.8,98.4],["2025-12-05",103.3,98.4],["2025-12-12",103.3,98.5],["2025-12-19",102.6,98.6],["2025-12-30",104.5,98.6],["2026-01-08",105.5,98.7],["2026-01-15",104.7,98.8],["2026-01-22",104.2,98.8],["2026-01-29",102.5,98.9],["2026-02-05",102.3,99.0],["2026-02-13",101.1,99.0],["2026-02-20",101.2,99.1],["2026-02-27",103.5,99.1],["2026-03-06",102.0,99.2],["2026-03-13",100.0,99.3],["2026-03-20",98.8,99.3],["2026-03-27",97.8,99.4],["2026-04-07",98.4,99.5],["2026-04-14",98.3,99.5],["2026-04-21",97.5,99.6],["2026-04-29",96.6,99.7],["2026-05-06",99.3,99.7],["2026-05-13",98.8,99.8],["2026-05-20",95.5,99.9],["2026-05-27",98.9,99.9],["2026-06-04",99.1,100.0],["2026-06-11",99.8,100.1],["2026-06-18",101.1,100.1],["2026-06-25",102.0,100.2],["2026-07-02",102.2,100.3],["2026-07-09",103.7,100.3],["2026-07-17",103.2,100.4],["2026-07-24",104.2,100.5],["2026-07-31",102.9,100.5],["2026-08-07",103.9,100.6],["2026-08-14",103.3,100.7],["2026-08-21",104.7,100.7],["2026-08-28",103.4,100.8],["2026-09-04",104.4,100.9],["2026-09-11",101.3,100.9],["2026-09-18",102.3,101.0],["2026-09-25",102.3,101.1],["2026-09-30",102.7,101.1]],"act":[["2026-01-05",3.177],["2026-01-08",3.199],["2026-01-13",3.187],["2026-01-16",3.195],["2026-01-21",3.121],["2026-01-26",3.128],["2026-01-29",3.106],["2026-02-03",3.097],["2026-02-09",3.105],["2026-02-12",3.112],["2026-02-17",3.028],["2026-02-20",3.068],["2026-02-25",3.104],["2026-03-02",3.109],["2026-03-05",3.12],["2026-03-10",3.006],["2026-03-13",3.03],["2026-03-18",3.064],["2026-03-23",2.965],["2026-03-26",2.982],["2026-03-31",2.946],["2026-04-07",2.982],["2026-04-10",3.001],["2026-04-15",2.985],["2026-04-20",2.941],["2026-04-23",2.97],["2026-04-29",2.928],["2026-05-04",2.995],["2026-05-07",3.029],["2026-05-12",2.987],["2026-05-15",2.972],["2026-05-20",2.894],["2026-05-25",2.971],["2026-05-28",3.02],["2026-06-03",3.017],["2026-06-08",2.985],["2026-06-11",3.025],["2026-06-16",3.066],["2026-06-19",3.09],["2026-06-24",3.073],["2026-06-29",3.096],["2026-07-02",3.099],["2026-07-07",3.137],["2026-07-13",3.126],["2026-07-16",3.117],["2026-07-21",3.121],["2026-07-24",3.158],["2026-07-29",3.178],["2026-08-03",3.143],["2026-08-06",3.18],["2026-08-11",3.149],["2026-08-14",3.132],["2026-08-19",3.167],["2026-08-24",3.148],["2026-08-27",3.155],["2026-09-01",3.118],["2026-09-04",3.164],["2026-09-09",3.126],["2026-09-14",3.071],["2026-09-17",3.098],["2026-09-22",3.133],["2026-09-25",3.102],["2026-09-30",3.112]],"fc":[["2026-10-01",3.065,2.845,3.285],["2026-10-12",3.068,2.848,3.288],["2026-10-21",3.071,2.851,3.291],["2026-10-30",3.073,2.854,3.293],["2026-11-10",3.076,2.856,3.296],["2026-11-19",3.079,2.859,3.299],["2026-11-30",3.082,2.862,3.302],["2026-12-09",3.085,2.865,3.305],["2026-12-18",3.087,2.867,3.307],["2026-12-29",3.09,2.87,3.31],["2027-01-07",3.093,2.873,3.313],["2027-01-18",3.096,2.876,3.316],["2027-01-27",3.099,2.879,3.319],["2027-02-05",3.101,2.881,3.321],["2027-02-16",3.104,2.884,3.324],["2027-02-25",3.107,2.887,3.327],["2027-03-08",3.11,2.89,3.33],["2027-03-17",3.113,2.893,3.333],["2027-03-26",3.115,2.895,3.335],["2027-04-06",3.118,2.898,3.338],["2027-04-15",3.121,2.901,3.341],["2027-04-26",3.124,2.904,3.344],["2027-05-05",3.127,2.906,3.347],["2027-05-14",3.129,2.909,3.349],["2027-05-25",3.132,2.912,3.352],["2027-06-03",3.135,2.915,3.355],["2027-06-14",3.138,2.918,3.358],["2027-06-23",3.14,2.92,3.361],["2027-07-02",3.143,2.923,3.363],["2027-07-13",3.146,2.926,3.366],["2027-07-22",3.149,2.929,3.369],["2027-08-02",3.152,2.932,3.372],["2027-08-11",3.154,2.934,3.375],["2027-08-20",3.157,2.937,3.377],["2027-08-31",3.16,2.94,3.38],["2027-09-09",3.163,2.943,3.383],["2027-09-20",3.166,2.945,3.386],["2027-09-29",3.168,2.948,3.389],["2027-10-08",3.171,2.951,3.391],["2027-10-19",3.174,2.954,3.394],["2027-10-28",3.177,2.957,3.397],["2027-11-08",3.18,2.959,3.4],["2027-11-17",3.182,2.962,3.403],["2027-11-26",3.185,2.965,3.405],["2027-12-07",3.188,2.968,3.408],["2027-12-16",3.191,2.971,3.411],["2027-12-27",3.194,2.973,3.414],["2027-12-31",3.195,2.975,3.415]]}};
+let mkt="US";
+const fmtD=d=>{const t=new Date(d+"T00:00:00");return t.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});};
+function lineChart(box,series,opt){
+  const svg=box.querySelector("svg"),W=560,H=300,m={t:14,r:14,b:30,l:46};
+  const xs=opt.x,all=[];series.forEach(s=>s.pts.forEach(p=>all.push(p[1])));if(opt.band)opt.band.forEach(b=>{all.push(b[1],b[2]);});
+  let lo=Math.min(...all),hi=Math.max(...all);const pad=(hi-lo)*.08;lo-=pad;hi+=pad;
+  const t0=xs[0],t1=xs[1];const X=d=>m.l+(W-m.l-m.r)*((Date.parse(d)-t0)/(t1-t0));const Y=v=>m.t+(H-m.t-m.b)*(1-(v-lo)/(hi-lo));
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const step=(()=>{const r=(hi-lo)/4,p=Math.pow(10,Math.floor(Math.log10(r)));return [1,2,2.5,5,10].map(k=>k*p).find(k=>k>=r);})();
+  let h="";for(let v=Math.ceil(lo/step)*step;v<=hi;v+=step){h+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${m.l-8}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--ink-3)" font-family="JetBrains Mono, monospace">${opt.fy(v)}</text>`;}
+  opt.ticks.forEach(d=>{h+=`<text x="${X(d[0])}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--ink-3)" font-family="JetBrains Mono, monospace">${d[1]}</text>`;});
+  if(opt.band){h+=`<path d="M${opt.band.map(b=>X(b[0])+","+Y(b[2])).join(" L")} L${opt.band.slice().reverse().map(b=>X(b[0])+","+Y(b[1])).join(" L")} Z" fill="rgba(143,179,221,.22)"/>`;}
+  series.forEach(s=>{h+=`<path d="M${s.pts.map(p=>X(p[0]).toFixed(1)+","+Y(p[1]).toFixed(1)).join(" L")}" fill="none" stroke="${s.c}" stroke-width="2" ${s.dash?'stroke-dasharray="6 5"':''} stroke-linejoin="round"/>`;});
+  const last=series[0].pts[series[0].pts.length-1];h+=`<circle cx="${X(last[0])}" cy="${Y(last[1])}" r="4" fill="${series[0].c}" stroke="var(--solid)" stroke-width="2"/>`;
+  h+=`<line class="xl" y1="${m.t}" y2="${H-m.b}" stroke="var(--ink-3)" stroke-dasharray="3 3" visibility="hidden"/><rect x="${m.l}" y="${m.t}" width="${W-m.l-m.r}" height="${H-m.t-m.b}" fill="transparent" class="hit"/>`;
+  svg.innerHTML=h;
+  let tip=box.querySelector(".xh");if(!tip){tip=document.createElement("div");tip.className="xh";tip.hidden=true;box.appendChild(tip);}
+  const xl=svg.querySelector(".xl"),hit=svg.querySelector(".hit");
+  const pts=opt.hover;
+  hit.addEventListener("mousemove",e=>{const r=svg.getBoundingClientRect(),sx=(e.clientX-r.left)*W/r.width;
+    let best=pts[0],bd=1e9;pts.forEach(p=>{const d=Math.abs(X(p.d)-sx);if(d<bd){bd=d;best=p;}});
+    const px=X(best.d);xl.setAttribute("x1",px);xl.setAttribute("x2",px);xl.setAttribute("visibility","visible");
+    tip.innerHTML=best.t;tip.hidden=false;const bx=px*r.width/W;tip.style.left=Math.min(Math.max(bx-tip.offsetWidth/2,0),r.width-tip.offsetWidth)+"px";tip.style.top="-6px";});
+  hit.addEventListener("mouseleave",()=>{tip.hidden=true;xl.setAttribute("visibility","hidden");});
+}
+function drawSC(){
+  const d=SC[mkt],cur=mkt==="US"?"USD":"NZD",dp=mkt==="US"?0:2;
+  lineChart($("p-trend"),[{pts:d.idx.map(r=>[r[0],r[1]]),c:"var(--teal)"},{pts:d.idx.map(r=>[r[0],r[2]]),c:"var(--ink-2)",dash:true}],
+    {x:[Date.parse("2022-01-03"),Date.parse("2026-09-30")],fy:v=>Math.round(v),ticks:[["2022-07-01","2022"],["2023-07-01","2023"],["2024-07-01","2024"],["2025-07-01","2025"],["2026-05-15","2026"]],
+     hover:d.idx.map(r=>({d:r[0],t:`${fmtD(r[0])}<br>Price ${r[1]} · Trend ${r[2]}`}))});
+  const fc=d.fc;
+  lineChart($("p-fc"),[{pts:d.act,c:"var(--teal)"},{pts:fc.map(r=>[r[0],r[1]]),c:"var(--ink-2)",dash:true}],
+    {x:[Date.parse("2026-01-02"),Date.parse("2027-12-31")],band:fc.map(r=>[r[0],r[2],r[3]]),fy:v=>v.toFixed(dp),
+     ticks:[["2026-04-01","Apr 26"],["2026-10-01","Oct 26"],["2027-04-01","Apr 27"],["2027-10-01","Oct 27"]],
+     hover:d.act.map(r=>({d:r[0],t:`${fmtD(r[0])}<br>Price ${r[1].toFixed(dp+ (mkt==="NZ"?1:0))} ${cur}`})).concat(fc.map(r=>({d:r[0],t:`${fmtD(r[0])}<br>Forecast ${r[1].toFixed(dp+(mkt==="NZ"?1:0))} (${r[2].toFixed(dp+(mkt==="NZ"?1:0))}–${r[3].toFixed(dp+(mkt==="NZ"?1:0))})`})))});
+  $("fc-unit").textContent=cur;
+}
+document.querySelectorAll(".segb").forEach(b=>b.addEventListener("click",()=>{mkt=b.dataset.mkt;document.querySelectorAll(".segb").forEach(o=>o.setAttribute("aria-pressed",o===b));drawSC();}));
+$("stage").onchange=e=>{st.stage=e.target.value;render();};
+$("reset").onclick=()=>{st.team.clear();st.pos.clear();st.branch=null;render();};
+route();
+})();
+/* ---------- timesheet demo ---------- */
+(function(){
+const q=id=>document.getElementById(id);if(!q("ts-app"))return;
+const days=["Monday","Tuesday","Wednesday","Thursday","Friday"];
+const sample=[["Worked","08:00","16:30","Cleaned loan data for the weekly Power BI refresh"],["Worked","08:00","16:30","Built branch summary table for the sales GMs"],["Worked","08:15","17:00","Prepared figures for the monthly Townhall slides"],["Worked","08:00","16:30","Ran data checks before the RBF return"],["Leave","","","Annual leave (approved)"]];
+const order=["login","sheet","email","approve","pdf"];
+const urls={login:"intern-timesheet.demo/login",sheet:"intern-timesheet.demo/timesheet",email:"mail.coralcoast.demo/inbox",approve:"intern-timesheet.demo/approve?token=••••••",pdf:"intern-timesheet.demo/export"};
+let st={view:"login",status:"Draft"};
+const monday=(()=>{const d=new Date(2026,9,26);return d;})();
+const fmt=d=>String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
+const escH=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+q("ts-week").textContent=fmt(monday);
+// rows
+q("ts-rows").innerHTML=days.map((d,i)=>{const dt=new Date(monday);dt.setDate(dt.getDate()+i);const s=sample[i];
+  return `<tr data-i="${i}"><td>${d}</td><td><input aria-label="${d} date" value="${fmt(dt)}" style="max-width:120px"></td>
+  <td><select aria-label="${d} status">${["Worked","Leave","Sick","Public Holiday"].map(o=>`<option${o===s[0]?" selected":""}>${o}</option>`).join("")}</select></td>
+  <td><input type="time" aria-label="${d} time in" value="${s[1]}"></td><td><input type="time" aria-label="${d} time out" value="${s[2]}"></td>
+  <td class="h">0.00</td><td><textarea aria-label="${d} tasks" rows="2">${escH(s[3])}</textarea></td></tr>`;}).join("");
+const toMin=v=>{if(!v)return null;const [h,m]=v.split(":").map(Number);return h*60+m;};
+function calc(){let tot=0,bad=0;q("ts-rows").querySelectorAll("tr").forEach(tr=>{
+  const [ , , sel]=tr.querySelectorAll("td"),ins=tr.querySelectorAll('input[type="time"]');const status=tr.querySelector("select").value;
+  const worked=status==="Worked";ins.forEach(i=>i.disabled=!worked);tr.classList.toggle("off",!worked);
+  let h=0;tr.classList.remove("bad");
+  if(worked){const a=toMin(ins[0].value),b=toMin(ins[1].value);if(a!=null&&b!=null){if(b<=a){bad++;tr.classList.add("bad");}else h=(b-a)/60;}}
+  tr.querySelector(".h").textContent=h.toFixed(2);tot+=h;});
+  q("ts-total").textContent=tot.toFixed(2);const e=q("ts-sheet-err");e.hidden=!bad;e.textContent=bad?"Time out must be later than time in.":"";return {tot,bad};}
+q("ts-rows").addEventListener("input",calc);q("ts-rows").addEventListener("change",calc);calc();
+// signature pads
+const pads={};
+function pad(id){const c=q(id),x=c.getContext("2d");let down=false,ink=false;
+  const pos=e=>{const r=c.getBoundingClientRect();return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height];};
+  x.lineWidth=2.4;x.lineCap="round";x.lineJoin="round";x.strokeStyle="#1d1a5c";
+  c.addEventListener("pointerdown",e=>{down=true;ink=true;c.setPointerCapture(e.pointerId);const [a,b]=pos(e);x.beginPath();x.moveTo(a,b);});
+  c.addEventListener("pointermove",e=>{if(!down)return;const [a,b]=pos(e);x.lineTo(a,b);x.stroke();});
+  c.addEventListener("pointerup",()=>down=false);c.addEventListener("pointercancel",()=>down=false);
+  pads[id]={clear(){x.clearRect(0,0,c.width,c.height);ink=false;},has:()=>ink,
+    auto(name){this.clear();x.save();x.font="italic 40px 'Brush Script MT','Segoe Script',cursive";x.fillStyle="#1d1a5c";x.fillText(name,24,78);
+      x.beginPath();x.moveTo(24,92);x.bezierCurveTo(140,104,260,86,380,96);x.stroke();x.restore();ink=true;},url:()=>c.toDataURL()};}
+pad("sig-intern");pad("sig-sup");
+document.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>pads[b.dataset.clear].clear());
+document.querySelectorAll("[data-auto]").forEach(b=>b.onclick=()=>pads[b.dataset.auto].auto(b.dataset.auto==="sig-intern"?q("ts-intern").value||"Intern":"L. Supervisor"));
+// view switch
+let tt;function toast(t){const el=q("ts-toast");el.textContent=t;el.hidden=false;clearTimeout(tt);tt=setTimeout(()=>el.hidden=true,1800);}
+function go(v){st.view=v;document.querySelectorAll(".ts-view").forEach(s=>s.hidden=s.dataset.v!==v);q("ts-url").textContent=urls[v];
+  const k=order.indexOf(v);q("ts-steps").querySelectorAll("li").forEach((li,i)=>{li.classList.toggle("on",i===k);li.classList.toggle("done",i<k);});}
+function setStatus(s,cls){st.status=s;const el=q("ts-status");el.textContent=s;el.className="ts-status"+(cls?" "+cls:"");}
+go("login");
+q("ts-login").addEventListener("submit",e=>{e.preventDefault();const em=q("ts-email").value.trim(),err=q("ts-login-err");
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)||!q("ts-pw").value){err.textContent="Enter a valid email address and password.";err.hidden=false;return;}err.hidden=true;go("sheet");});
+q("ts-save").onclick=()=>toast("Draft saved");
+q("ts-submit").onclick=()=>{const {tot,bad}=calc(),err=q("ts-sheet-err");
+  if(bad){err.hidden=false;return;}
+  if(!pads["sig-intern"].has()){err.textContent="Sign the timesheet before submitting (or use “Sign for me”).";err.hidden=false;return;}
+  err.hidden=true;setStatus("Submitted","sub");
+  q("ts-mail-subj").textContent="Timesheet to approve: "+(q("ts-intern").value||"Intern")+", week of "+fmt(monday);
+  q("ts-mail-name").textContent=q("ts-intern").value||"Intern";q("ts-mail-week").textContent=fmt(monday);q("ts-mail-hrs").textContent=tot.toFixed(2);
+  go("email");};
+function rowsData(){return [...q("ts-rows").querySelectorAll("tr")].map(tr=>{const i=tr.querySelectorAll("input,select,textarea");
+  return {day:tr.firstElementChild.textContent,date:i[0].value,status:i[1].value,tin:i[2].value,tout:i[3].value,h:tr.querySelector(".h").textContent,tasks:i[4].value};});}
+q("ts-open-link").onclick=()=>{
+  const r=rowsData();q("ts-review").innerHTML=`<table><thead><tr><th>Day</th><th>Status</th><th>In</th><th>Out</th><th>Hours</th><th>Tasks</th></tr></thead><tbody>${
+    r.map(d=>`<tr><td>${d.day}</td><td>${escH(d.status)}</td><td>${d.tin||"–"}</td><td>${d.tout||"–"}</td><td class="mono">${d.h}</td><td>${escH(d.tasks)}</td></tr>`).join("")}
+    <tr><td colspan="4"><b>Total</b></td><td class="mono"><b>${q("ts-total").textContent}</b></td><td>${escH(q("ts-comments").value)}</td></tr></tbody></table>`;
+  pads["sig-sup"].clear();q("ts-appr-err").hidden=true;go("approve");};
+q("ts-return").onclick=()=>{setStatus("Returned for changes","ret");go("sheet");toast("Returned to intern");};
+q("ts-approve").onclick=()=>{if(!pads["sig-sup"].has()){const e=q("ts-appr-err");e.textContent="Sign before approving (or use “Sign for me”).";e.hidden=false;return;}
+  setStatus("Approved","ok");const r=rowsData();
+  q("ts-pdf").innerHTML=`<span class="stamp">APPROVED</span><h4>Coral Coast Finance Ltd</h4><div class="sub">Intern timesheet</div>
+   <div><b>Intern:</b> ${escH(q("ts-intern").value)} &nbsp; <b>Week starting:</b> ${fmt(monday)} &nbsp; <b>Status:</b> Approved</div>
+   <table><thead><tr><th>Day</th><th>Date</th><th>Status</th><th>In</th><th>Out</th><th>Hours</th><th>Tasks</th></tr></thead><tbody>${
+   r.map(d=>`<tr><td>${d.day}</td><td>${escH(d.date)}</td><td>${escH(d.status)}</td><td>${d.tin||"–"}</td><td>${d.tout||"–"}</td><td>${d.h}</td><td>${escH(d.tasks)}</td></tr>`).join("")}</tbody></table>
+   <div><b>Total hours:</b> ${q("ts-total").textContent} &nbsp; <b>Comments:</b> ${escH(q("ts-comments").value)}</div>
+   <div class="sigs"><div><img alt="Intern signature" src="${pads["sig-intern"].url()}"><span>Intern signature · ${fmt(new Date(2026,9,30))}</span></div>
+   <div><img alt="Supervisor signature" src="${pads["sig-sup"].url()}"><span>Supervisor signature · ${fmt(new Date(2026,9,31))}</span></div></div>`;
+  go("pdf");};
+q("ts-restart").onclick=()=>{setStatus("Draft");pads["sig-intern"].clear();go("login");};
+q("ts-steps").addEventListener("click",e=>{const li=e.target.closest("li");if(!li)return;const k=order.indexOf(li.dataset.s);if(k<=order.indexOf(st.view)&&k<2)go(li.dataset.s);});
+})();
+
+</script>
+
+</body>
+</html>
